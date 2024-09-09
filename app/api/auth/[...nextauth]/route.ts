@@ -1,6 +1,10 @@
 import NextAuth from "next-auth"
 import TwitterProvider from "next-auth/providers/twitter"
 
+console.log('TWITTER_CLIENT_ID:', process.env.TWITTER_CLIENT_ID)
+console.log('TWITTER_CLIENT_SECRET exists:', !!process.env.TWITTER_CLIENT_SECRET)
+console.log('NEXTAUTH_URL:', process.env.NEXTAUTH_URL)
+
 const handler = NextAuth({
   providers: [
     TwitterProvider({
@@ -11,11 +15,9 @@ const handler = NextAuth({
   ],
   callbacks: {
     async jwt({ token, user }) {
-      // You can add custom logic here
       return token
     },
     async session({ session, token }) {
-      // You can add custom logic here
       return session
     },
   },
