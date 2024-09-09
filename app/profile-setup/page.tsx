@@ -17,10 +17,7 @@ export default function ProfileSetupPage() {
     if (status === 'unauthenticated') {
       router.push('/login')
     }
-    if (session?.user?.githubId) {
-      setGithubConnected(true)
-    }
-  }, [status, router, session])
+  }, [status, router])
 
   const handleGitHubConnect = async () => {
     const result = await signIn('github', { redirect: false })
@@ -28,8 +25,7 @@ export default function ProfileSetupPage() {
       console.error('GitHub connection failed:', result.error)
     } else {
       setGithubConnected(true)
-      await update() // Update the session to include GitHub data
-      await fetchGitHubData() // Fetch and store GitHub data
+      await update()
     }
   }
 
