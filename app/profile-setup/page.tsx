@@ -29,6 +29,22 @@ export default function ProfileSetupPage() {
     } else {
       setGithubConnected(true)
       await update() // Update the session to include GitHub data
+      await fetchGitHubData() // Fetch and store GitHub data
+    }
+  }
+
+  const fetchGitHubData = async () => {
+    try {
+      const response = await fetch('/api/github/user-data')
+      if (response.ok) {
+        const data = await response.json()
+        console.log('GitHub data fetched:', data)
+        // TODO: Store this data in Firestore
+      } else {
+        console.error('Failed to fetch GitHub data')
+      }
+    } catch (error) {
+      console.error('Error fetching GitHub data:', error)
     }
   }
 

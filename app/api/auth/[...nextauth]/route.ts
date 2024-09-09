@@ -1,4 +1,4 @@
-import NextAuth, { DefaultSession, User as NextAuthUser, Profile } from "next-auth"
+import NextAuth, { NextAuthOptions, DefaultSession, User as NextAuthUser, Profile } from "next-auth"
 import TwitterProvider from "next-auth/providers/twitter"
 import GitHubProvider from "next-auth/providers/github"
 import { FirestoreAdapter } from "@next-auth/firebase-adapter"
@@ -19,7 +19,7 @@ declare module "next-auth" {
   }
 }
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
     TwitterProvider({
       clientId: process.env.TWITTER_CLIENT_ID as string,
@@ -60,6 +60,8 @@ const handler = NextAuth({
     newUser: '/profile-setup',
   },
   debug: process.env.NODE_ENV === 'development',
-})
+}
+
+const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST }
