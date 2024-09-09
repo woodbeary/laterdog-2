@@ -1,4 +1,4 @@
-import NextAuth, { DefaultSession } from "next-auth"
+import NextAuth, { DefaultSession, User as NextAuthUser, Profile } from "next-auth"
 import TwitterProvider from "next-auth/providers/twitter"
 import GitHubProvider from "next-auth/providers/github"
 import { FirestoreAdapter } from "@next-auth/firebase-adapter"
@@ -8,7 +8,14 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      githubId?: string;
+      twitterId?: string;
     } & DefaultSession["user"]
+  }
+
+  interface User {
+    githubId?: string;
+    twitterId?: string;
   }
 }
 
@@ -29,8 +36,18 @@ const handler = NextAuth({
     async session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
+        session.user.githubId = (user as any).githubId;
+        session.user.twitterId = (user as any).twitterId;
       }
       return session;
+    },
+    async signIn({ user, account, profile }) {
+      if (account?.provider === 'github') {
+        (user as any).githubId = (profile as Profile & { sub?: string })?.sub;
+      } else if (account?.provider === 'twitter') {
+        (user as any).twitterId = (profile as Profile & { sub?: string })?.sub;
+      }
+      return true;
     },
     async redirect({ url, baseUrl }) {
       if (url.startsWith(baseUrl)) return url

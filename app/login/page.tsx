@@ -1,16 +1,22 @@
 'use client'
 
+import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { Button } from "@/components/ui/button"
 import Image from 'next/image'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 
 export default function LoginPage() {
+  const [showExplanation, setShowExplanation] = useState(false)
+
   const handleXLogin = async () => {
-    console.log('Login button clicked') // Add this line
+    setShowExplanation(true)
+  }
+
+  const proceedWithLogin = async () => {
+    setShowExplanation(false)
     try {
-      console.log('Attempting to sign in with Twitter') // Add this line
       const result = await signIn('twitter', { callbackUrl: '/profile-setup', redirect: false })
-      console.log('Sign in result:', result) // Add this line
       if (result?.error) {
         console.error('Login error:', result.error)
       }
@@ -30,6 +36,26 @@ export default function LoginPage() {
         <Image src="/images/logo-white.png" alt="X logo" width={24} height={24} className="mr-2" />
         Continue with X
       </Button>
+
+      <Dialog open={showExplanation} onOpenChange={setShowExplanation}>
+        <DialogContent className="bg-gray-800 text-green-400 border-green-500">
+          <DialogHeader>
+            <DialogTitle>Before we continue...</DialogTitle>
+            <DialogDescription>
+              We value your privacy and security. Here's what you need to know:
+              <ul className="list-disc list-inside mt-2">
+                <li>We only access your public profile information (name, username, profile picture).</li>
+                <li>Your data is never shared with third parties.</li>
+                <li>We use this information to create your later.dog profile.</li>
+                <li>You can revoke access at any time from your X settings.</li>
+              </ul>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={proceedWithLogin}>I understand, continue to X</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
