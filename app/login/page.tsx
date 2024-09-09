@@ -1,15 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { signIn } from 'next-auth/react'
 import { Button } from "@/components/ui/button"
-import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 
 export default function LoginPage() {
-  const router = useRouter()
-
   const handleXLogin = () => {
-    // This will be replaced with actual X (Twitter) OAuth logic
+    signIn('twitter', { callbackUrl: '/profile-setup' })
   }
 
   return (
@@ -23,8 +20,6 @@ export default function LoginPage() {
         <Image src="/images/logo-white.png" alt="X logo" width={24} height={24} className="mr-2" />
         Continue with X
       </Button>
-
-      {/* Remove the image carousel for now */}
     </div>
   )
 }
