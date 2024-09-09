@@ -5,8 +5,18 @@ import { Button } from "@/components/ui/button"
 import Image from 'next/image'
 
 export default function LoginPage() {
-  const handleXLogin = () => {
-    signIn('twitter', { callbackUrl: '/profile-setup' })
+  const handleXLogin = async () => {
+    console.log('Login button clicked') // Add this line
+    try {
+      console.log('Attempting to sign in with Twitter') // Add this line
+      const result = await signIn('twitter', { callbackUrl: '/profile-setup', redirect: false })
+      console.log('Sign in result:', result) // Add this line
+      if (result?.error) {
+        console.error('Login error:', result.error)
+      }
+    } catch (error) {
+      console.error('Login error:', error)
+    }
   }
 
   return (

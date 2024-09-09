@@ -42,6 +42,7 @@ const handler = NextAuth({
     signIn: '/login',
     newUser: '/profile-setup',
   },
+  debug: process.env.NODE_ENV === 'development',
 })
 
 export { handler as GET, handler as POST }
