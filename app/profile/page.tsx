@@ -140,7 +140,12 @@ export default function ProfilePage() {
   }, [])
 
   const fetchGithubData = async () => {
-    // ... (keep existing fetchGithubData function)
+    try {
+      // Fetch GitHub data
+      // ...
+    } catch (error) {
+      // Handle error without logging sensitive information
+    }
   }
 
   const handlePhotoUpload = () => {

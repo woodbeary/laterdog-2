@@ -10,7 +10,6 @@ export default function LoginPage() {
 
   const handleXLogin = () => {
     // This will be replaced with actual X (Twitter) OAuth logic
-    console.log('X login clicked')
   }
 
   return (
