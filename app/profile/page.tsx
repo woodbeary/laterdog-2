@@ -18,11 +18,23 @@ import SettingsPage from '@/components/SettingsPage'
 import { useTheme } from '@/contexts/ThemeContext'
 import Link from 'next/link'
 import { MatchStats } from '@/components/MatchStats'
+import { MockSessionProvider } from "../mock-session-provider"
 import GithubContributionGraph from '@/components/GithubContributionGraph'
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { MatchData } from '@/lib/mockData'
+import { MatchData, mockMatches } from '@/lib/mockData'
 import { PullRequestsReceived } from '@/components/PullRequestsReceived'
 import { generateWingmanMessage } from '@/lib/messageGenerator'
+
+const mockGithubData: GithubData = {
+  public_repos: 30,
+  followers: 100,
+  following: 50,
+  total_commits: 1500,
+  top_language: "JavaScript",
+  account_age: 3 // years
+}
+
+const isDevelopment = process.env.NODE_ENV === 'development'
 
 function generateMatchStats(match: MatchData) {
   const { githubData, profile } = match
@@ -77,7 +89,7 @@ export default function ProfilePage() {
   const [photos, setPhotos] = useState<string[]>([])
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false)
-  const [matches, setMatches] = useState<MatchData[]>([])
+  const [matches, setMatches] = useState(mockMatches)
   const router = useRouter()
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -91,47 +103,49 @@ export default function ProfilePage() {
   const [isBlockDialogOpen, setIsBlockDialogOpen] = useState(false)
   const [selectedMatchForAction, setSelectedMatchForAction] = useState<MatchData | null>(null)
 
-  const [pullRequests, setPullRequests] = useState<{from: MatchData, message: string}[]>([])
+  const [pullRequests, setPullRequests] = useState([
+    {
+      from: mockMatches[1],
+      message: generateWingmanMessage(mockMatches[1], mockMatches[0]) // Assuming mockMatches[0] is the current user
+    },
+    // ... you can add more mock pull requests here if needed
+  ])
 
   const handleAcceptPR = (profile: MatchData) => {
+    // Logic to handle accepting a pull request
     console.log('Accepted pull request from', profile.name)
+    // You might want to add this profile to matches, show a confirmation, etc.
   }
 
   const handleDeclinePR = (profile: MatchData) => {
+    // Logic to handle declining a pull request
     console.log('Declined pull request from', profile.name)
+    // You might want to remove this pull request from the list
   }
 
   useEffect(() => {
-    if ((session?.user as CustomUser)?.githubToken) {
+    if (!session) {
+      setGithubData(mockGithubData)
+    } else if ((session?.user as CustomUser)?.githubToken) {
       fetchGithubData()
     }
   }, [session])
 
   useEffect(() => {
-    fetchGrokRoast()
+    // In a real app, this would be an API call to get the Grok roast
+    const mockGrokRoast = "Spends more time optimizing algorithms than social skills. Your commit history is more active than your dating life."
+    const mockGrokDetailedRoast = "Your code is clean, but your coffee mug collection is a biohazard. You've got 99 problems, and they're all merge conflicts."
+    setGrokRoast(mockGrokRoast)
+    setGrokDetailedRoast(mockGrokDetailedRoast)
   }, [])
 
   const fetchGithubData = async () => {
-    try {
-      // Fetch GitHub data
-      // ...
-    } catch (error) {
-      // Handle error without logging sensitive information
-    }
-  }
-
-  const fetchGrokRoast = async () => {
-    try {
-      // Fetch Grok roast from API
-      // ...
-    } catch (error) {
-      // Handle error
-    }
+    // ... (keep existing fetchGithubData function)
   }
 
   const handlePhotoUpload = () => {
     if (photos.length < 6) {
-      // Implement photo upload logic
+      setPhotos([...photos, `https://picsum.photos/200/300?random=${photos.length + 1}`])
     }
   }
 
@@ -172,7 +186,7 @@ export default function ProfilePage() {
     return <div className="flex items-center justify-center h-screen">Loading...</div>
   }
 
-  const user = session?.user as CustomUser || { name: 'User', username: 'user', image: 'https://github.com/github.png' }
+  const user = session?.user as CustomUser || { name: 'Mock User', username: 'mockuser', image: 'https://github.com/github.png' }
 
   return (
     <div className={`relative min-h-screen ${isLightMode ? 'bg-gray-100 text-gray-900' : 'bg-gray-900 text-green-400'} font-mono`}>
