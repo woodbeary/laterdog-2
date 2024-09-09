@@ -6,6 +6,7 @@ console.log('Environment variables in [...nextauth]/route.ts:');
 console.log('NEXTAUTH_URL:', process.env.NEXTAUTH_URL);
 console.log('TWITTER_CLIENT_ID exists:', !!process.env.TWITTER_CLIENT_ID);
 console.log('TWITTER_CLIENT_SECRET exists:', !!process.env.TWITTER_CLIENT_SECRET);
+console.log('NEXTAUTH_SECRET exists:', !!process.env.NEXTAUTH_SECRET);
 
 let handler: any;
 
@@ -18,6 +19,7 @@ try {
         version: "2.0",
       }),
     ],
+    secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
       async jwt({ token, user }) {
         return token
