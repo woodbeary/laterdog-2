@@ -1,4 +1,8 @@
-import admin from 'firebase-admin'
+import admin from 'firebase-admin';
+
+console.log('Firebase Project ID:', process.env.FIREBASE_PROJECT_ID);
+console.log('Firebase Client Email:', process.env.FIREBASE_CLIENT_EMAIL);
+console.log('Firebase Private Key exists:', !!process.env.FIREBASE_PRIVATE_KEY);
 
 if (!admin.apps.length) {
   try {
@@ -8,12 +12,11 @@ if (!admin.apps.length) {
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
         privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
       }),
-      databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}.firebaseio.com`,
-    })
-    console.log('Firebase Admin initialized successfully')
+    });
+    console.log('Firebase Admin initialized successfully');
   } catch (error) {
-    console.error('Failed to initialize Firebase Admin:', error)
+    console.error('Failed to initialize Firebase Admin:', error);
   }
 }
 
-export const firestore = admin.firestore()
+export const firestore = admin.firestore();
