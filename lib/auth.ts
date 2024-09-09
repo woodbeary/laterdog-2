@@ -31,14 +31,7 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GITHUB_SECRET as string,
     }),
   ],
-  adapter: (() => {
-    try {
-      return FirestoreAdapter(firestore)
-    } catch (error) {
-      console.error('Failed to initialize FirestoreAdapter:', error)
-      return undefined
-    }
-  })(),
+  adapter: FirestoreAdapter(firestore),
   callbacks: {
     async session({ session, user }) {
       if (session.user) {
