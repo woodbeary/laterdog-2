@@ -11,13 +11,16 @@ const handler = NextAuth({
   ],
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async jwt({ token, user }) {
-      return token
+    async jwt({ token, user, account }) {
+      console.log("JWT Callback", { token, user, account });
+      return token;
     },
-    async session({ session, token }) {
-      return session
+    async session({ session, token, user }) {
+      console.log("Session Callback", { session, token, user });
+      return session;
     },
   },
+  debug: true, // Enable debug messages
 })
 
 export { handler as GET, handler as POST }

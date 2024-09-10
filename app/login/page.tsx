@@ -4,12 +4,20 @@ import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { signIn } from 'next-auth/react'
+import { PermissionsModal } from '../components/PermissionsModal'
 
 export default function LoginPage() {
   const router = useRouter()
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleXLogin = () => {
-    // This will be replaced with actual X (Twitter) OAuth logic
+    setIsModalOpen(true)
+  }
+
+  const handleConfirmPermissions = () => {
+    setIsModalOpen(false)
+    signIn('twitter', { callbackUrl: '/' })
   }
 
   return (
@@ -23,6 +31,12 @@ export default function LoginPage() {
         <Image src="/images/logo-white.png" alt="X logo" width={24} height={24} className="mr-2" />
         Continue with X
       </Button>
+
+      <PermissionsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleConfirmPermissions}
+      />
 
       {/* Remove the image carousel for now */}
     </div>
