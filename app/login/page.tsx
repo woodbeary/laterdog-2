@@ -17,7 +17,7 @@ export default function LoginPage() {
 
   const handleConfirmPermissions = () => {
     setIsModalOpen(false)
-    signIn('twitter', { callbackUrl: '/' })
+    signIn('twitter', { callbackUrl: '/profile-setup' })
   }
 
   return (
@@ -37,8 +37,6 @@ export default function LoginPage() {
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleConfirmPermissions}
       />
-
-      {/* Remove the image carousel for now */}
     </div>
   )
 }

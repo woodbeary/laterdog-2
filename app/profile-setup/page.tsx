@@ -1,173 +1,227 @@
 'use client'
 
-import { useState } from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Github, Image, X, MapPin, Calendar } from "lucide-react"
+import { useSession, signIn, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-
-// Dummy user data (simulating data from X)
-const dummyUser = {
-  name: "John Doe",
-  username: "johndoe",
-  image: "https://picsum.photos/200",
-  location: "",
-  age: null as number | null
-}
+import { useEffect, useState } from 'react'
+import { Button } from "@/components/ui/button"
+import { Github, Trash2 } from 'lucide-react'
+import Image from 'next/image'
+import { db } from '@/firebase'
+import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore'
+import { DeleteAccountModal } from '../components/DeleteAccountModal'
 
 export default function ProfileSetupPage() {
-  const [step, setStep] = useState(1)
-  const [isGithubLinked, setIsGithubLinked] = useState(false)
-  const [selectedProfilePic, setSelectedProfilePic] = useState('')
-  const [bio, setBio] = useState('')
-  const [location, setLocation] = useState(dummyUser.location)
-  const [age, setAge] = useState<number | null>(dummyUser.age)
+  const { data: session, status } = useSession()
   const router = useRouter()
+  const [isLoading, setIsLoading] = useState(true)
+  const [imageError, setImageError] = useState(false)
+  const [setupProgress, setSetupProgress] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return JSON.parse(localStorage.getItem('setupProgress') || '{}');
+    }
+    return {};
+  });
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const handleGithubConnect = async () => {
-    // Simulate GitHub connection
-    setIsGithubLinked(true)
-    setStep(2)
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login')
+    } else if (status === 'authenticated' && session.user) {
+      checkUserSetup()
+    }
+  }, [status, session, router])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('setupProgress', JSON.stringify(setupProgress));
+    }
+  }, [setupProgress]);
+
+  const checkUserSetup = async () => {
+    if (session?.user?.id) {
+      try {
+        const userDoc = await getDoc(doc(db, 'users', session.user.id))
+        if (!userDoc.exists()) {
+          // User doesn't exist in Firestore, create the document
+          const userData: {
+            name: string;
+            image: string;
+            username: string;
+            twitterUsername?: string;
+            twitterId?: string;
+            provider: string;
+            setupComplete: boolean;
+            githubLinked: boolean;
+            email?: string;
+          } = {
+            name: session.user.name || '',
+            image: session.user.image || '',
+            username: session.user.username || '',
+            provider: 'twitter',
+            setupComplete: false,
+            githubLinked: false
+          };
+          if (session.user.twitterUsername) {
+            userData.twitterUsername = session.user.twitterUsername;
+          }
+          if (session.user.twitterId) {
+            userData.twitterId = session.user.twitterId;
+          }
+          // Only add email if it exists
+          if (session.user.email) {
+            userData.email = session.user.email;
+          }
+          await setDoc(doc(db, 'users', session.user.id), userData)
+          console.log("Created new user document in Firestore")
+        } else if (userDoc.data()?.setupComplete) {
+          router.push('/profile')
+          return
+        } else {
+          console.log("User document exists but setup is not complete")
+        }
+        setIsLoading(false)
+      } catch (error) {
+        console.error("Error checking user setup:", error)
+        setIsLoading(false)
+      }
+    }
   }
 
-  const handleProfilePicSelect = (pic: string) => {
-    setSelectedProfilePic(pic)
-    setStep(3)
+  const handleGitHubLink = () => {
+    signIn('github', { callbackUrl: '/profile-setup' })
   }
 
-  const handleBioSubmit = () => {
-    // Here you would typically save the bio to your backend
-    setStep(4)
+  const handleContinueToProfile = async () => {
+    if (session?.user?.id) {
+      try {
+        await setDoc(doc(db, 'users', session.user.id), {
+          setupComplete: true,
+          githubLinked: !!session.user.githubUsername
+        }, { merge: true })
+        console.log("Updated user document in Firestore")
+        router.push('/profile')
+      } catch (error) {
+        console.error("Error updating user setup:", error)
+      }
+    }
   }
 
-  const handleFinalSubmit = () => {
-    // Here you would save all the profile data
-    router.push('/profile')
+  const handleDeleteAccount = async () => {
+    if (session?.user?.id) {
+      try {
+        // Delete user document from Firestore
+        await deleteDoc(doc(db, 'users', session.user.id))
+        console.log("Deleted user document from Firestore")
+        
+        // Clear local storage
+        localStorage.removeItem('setupProgress')
+        
+        // Sign out the user
+        await signOut({ callbackUrl: '/login' })
+      } catch (error) {
+        console.error("Error deleting user account:", error)
+      }
+    }
   }
 
-  const formatName = (name: string) => {
-    const names = name.split(' ')
-    return names[0] + ' ' + names[names.length - 1][0] + '.'
+  const handleDownloadData = async () => {
+    if (session?.user?.id) {
+      try {
+        const userDoc = await getDoc(doc(db, 'users', session.user.id))
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          // Only include name and usernames
+          const downloadableData = {
+            name: userData.name,
+            twitterUsername: userData.twitterUsername,
+            githubUsername: userData.githubUsername,
+          };
+          
+          const dataStr = JSON.stringify(downloadableData, null, 2);
+          const dataBlob = new Blob([dataStr], { type: 'application/json' });
+          const url = URL.createObjectURL(dataBlob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'my_laterdog_data.json';
+          link.click();
+          URL.revokeObjectURL(url);
+        }
+      } catch (error) {
+        console.error("Error downloading user data:", error)
+      }
+    }
+  }
+
+  const getProfileImage = () => {
+    if (!imageError && session?.user?.image) return session.user.image
+    if (!imageError && session?.user?.githubImage) return session.user.githubImage
+    return '/default-avatar.png'
+  }
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>
+  }
+
+  if (!session) {
+    return null
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-green-400 font-mono p-4 flex flex-col">
-      <h1 className="text-2xl font-bold text-center mb-6 text-green-300">Set Up Your Profile</h1>
+    <div className="min-h-screen bg-gray-900 text-green-400 font-mono p-8 flex flex-col items-center justify-center">
+      <h1 className="text-3xl font-bold text-center mb-8 text-green-300">Set Up Your Profile</h1>
       
-      {/* Display user info from X */}
-      <div className="mb-6 text-center">
-        <div className="w-24 h-24 rounded-full mx-auto mb-2 bg-gray-700 flex items-center justify-center">
-          <Image className="w-12 h-12 text-gray-500" />
-        </div>
-        <h2 className="text-xl font-bold">{formatName(dummyUser.name)}</h2>
-        <p className="text-green-400">@{dummyUser.username}</p>
-      </div>
-
-      {step === 1 && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 backdrop-blur-sm">
-          <div className="bg-gray-800 p-6 rounded-lg max-w-sm w-full mx-4 border border-green-500">
-            <h3 className="text-xl font-bold mb-4 text-center text-green-300">Link Your GitHub Account</h3>
-            <p className="mb-4 text-center">To continue setting up your profile, please link your GitHub account.</p>
-            <Button 
-              className="w-full bg-gray-600 hover:bg-gray-500 text-white"
-              onClick={handleGithubConnect}
-            >
-              <Github className="mr-2 h-4 w-4" /> Connect GitHub
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {isGithubLinked && step === 2 && (
-        <div className="mb-6">
-          <h3 className="text-xl font-bold mb-4 text-center text-green-300">Choose Your Profile Picture</h3>
-          <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <div className="text-center">
-              <div className="w-32 h-32 rounded-full mb-2 bg-gray-700 flex items-center justify-center mx-auto">
-                <X className="w-16 h-16 text-gray-500" />
-              </div>
-              <Button
-                className={`w-full ${selectedProfilePic === 'x' ? 'bg-blue-600' : 'bg-gray-600'}`}
-                onClick={() => handleProfilePicSelect('x')}
-              >
-                X Profile Pic
-              </Button>
-            </div>
-            <div className="text-center">
-              <div className="w-32 h-32 rounded-full mb-2 bg-gray-700 flex items-center justify-center mx-auto">
-                <Github className="w-16 h-16 text-gray-500" />
-              </div>
-              <Button
-                className={`w-full ${selectedProfilePic === 'github' ? 'bg-gray-600' : 'bg-gray-700'}`}
-                onClick={() => handleProfilePicSelect('github')}
-              >
-                GitHub Profile Pic
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {isGithubLinked && step === 3 && (
-        <div className="mb-6">
-          <h3 className="text-xl font-bold mb-4 text-center text-green-300">Add Your Bio</h3>
-          <textarea
-            className="w-full p-2 bg-gray-800 text-green-400 rounded mb-4 border border-green-500"
-            rows={4}
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-            placeholder="Tell us about yourself..."
+      <div className="w-full max-w-md space-y-6">
+        <div className="bg-gray-800 p-6 rounded-lg text-center">
+          <Image 
+            src={getProfileImage()} 
+            alt="Profile" 
+            width={128} 
+            height={128} 
+            className="rounded-full mx-auto mb-4"
+            onError={() => setImageError(true)}
           />
-          <Button 
-            className="w-full bg-green-600 hover:bg-green-700 text-white"
-            onClick={handleBioSubmit}
-          >
-            Continue
-          </Button>
+          <p className="mb-4">Welcome, {session.user.name || session.user.username || 'User'}!</p>
+          {!session.user.githubUsername ? (
+            <Button 
+              className="w-full py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-full shadow-md transition-all duration-200 ease-in-out flex items-center justify-center"
+              onClick={handleGitHubLink}
+            >
+              <Github className="mr-2" />
+              Link GitHub Account
+            </Button>
+          ) : (
+            <Button 
+              className="w-full mt-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-full shadow-md transition-all duration-200 ease-in-out"
+              onClick={handleContinueToProfile}
+            >
+              Continue to Profile
+            </Button>
+          )}
         </div>
-      )}
-
-      {isGithubLinked && step === 4 && (
-        <div className="mb-6">
-          <h3 className="text-xl font-bold mb-4 text-center text-green-300">Additional Information</h3>
-          <div className="space-y-4">
-            <div className="flex items-center">
-              <MapPin className="mr-2" />
-              <Input
-                type="text"
-                placeholder="Location"
-                value={location}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLocation(e.target.value)}
-                className="flex-grow bg-gray-800 text-green-400 border-green-500"
-              />
-            </div>
-            <div className="flex items-center">
-              <Calendar className="mr-2" />
-              <Input
-                type="number"
-                placeholder="Age"
-                value={age || ''}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAge(Number(e.target.value) || null)}
-                className="flex-grow bg-gray-800 text-green-400 border-green-500"
-              />
-            </div>
-          </div>
-          <Button 
-            className="w-full bg-green-600 hover:bg-green-700 text-white mt-4"
-            onClick={handleFinalSubmit}
-          >
-            Complete Profile
-          </Button>
-        </div>
-      )}
-
-      {/* Progress indicator */}
-      <div className="mt-auto pt-8 flex justify-center">
-        <div className={`w-3 h-3 rounded-full ${step >= 1 ? 'bg-green-500' : 'bg-gray-600'} mx-1`}></div>
-        <div className={`w-3 h-3 rounded-full ${step >= 2 ? 'bg-green-500' : 'bg-gray-600'} mx-1`}></div>
-        <div className={`w-3 h-3 rounded-full ${step >= 3 ? 'bg-green-500' : 'bg-gray-600'} mx-1`}></div>
-        <div className={`w-3 h-3 rounded-full ${step >= 4 ? 'bg-green-500' : 'bg-gray-600'} mx-1`}></div>
       </div>
+
+      <div className="mt-4 flex space-x-4">
+        <Button 
+          className="bg-red-600 hover:bg-red-700"
+          onClick={() => signOut()}
+        >
+          Sign Out
+        </Button>
+        <Button 
+          className="bg-gray-600 hover:bg-gray-700 flex items-center"
+          onClick={() => setIsDeleteModalOpen(true)}
+        >
+          <Trash2 className="mr-2 h-4 w-4" />
+          Delete Account
+        </Button>
+      </div>
+
+      <DeleteAccountModal 
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteAccount}
+        onDownloadData={handleDownloadData}
+      />
     </div>
   )
 }
