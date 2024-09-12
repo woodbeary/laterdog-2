@@ -22,7 +22,7 @@ const SwipeMockup: React.FC = () => {
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => handleSwipe('left'),
     onSwipedRight: () => handleSwipe('right'),
-    preventDefaultTouchmoveEvent: true,
+    touchEventOptions: { passive: false },
     trackMouse: true
   });
 

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/firebase'
 import { doc, setDoc } from 'firebase/firestore'
 import { getServerSession } from 'next-auth/next'
-import { authOptions } from '../auth/[...nextauth]/route'
+import { authOptions } from "../auth/[...nextauth]/authOptions"
 import { UserProfile } from '@/types/user'
 
 export async function POST(request: Request) {
