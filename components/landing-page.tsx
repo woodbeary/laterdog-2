@@ -13,6 +13,7 @@ import * as THREE from 'three'
 import { ErrorBoundary } from 'react-error-boundary'
 import Image from 'next/image'
 import SwipeMockup from './SwipeMockup'
+import { useSession } from "next-auth/react";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -128,6 +129,7 @@ function ErrorFallback({error}: {error: Error}) {
 }
 
 export function LandingPage() {
+  const { data: session, status } = useSession();
   const router = useRouter()
   const [showFullSecurityNote, setShowFullSecurityNote] = useState(false)
   const [showCursor, setShowCursor] = useState(true)
@@ -138,7 +140,7 @@ export function LandingPage() {
   const fullText2 = '"Found a coding soulmate on later.dog. Our commit histories were meant to be!"'
 
   const handleXLogin = () => {
-    router.push('/login')
+    router.push('/api/auth/signin')
   }
 
   useEffect(() => {
@@ -209,21 +211,45 @@ export function LandingPage() {
           Where code commits lead to real-life commits
         </p>
         
-        {/* Login Card */}
+        {/* Login Card or User Profile */}
         <Card className={`border mb-12 sm:mb-16 w-full max-w-md ${cardBgColor} ${cardBorderColor} shadow-lg`}>
           <CardHeader>
             <CardTitle className={`text-2xl sm:text-3xl ${isDay ? 'text-gray-800' : 'text-emerald-300'}`}>
-              Get Started
+              {status === 'authenticated' ? 'Welcome Back!' : 'Get Started'}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button 
-              className={`w-full rounded-full shadow-md transition-all duration-200 ease-in-out flex items-center justify-center text-lg ${isDay ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-emerald-600 hover:bg-emerald-500 text-white'}`}
-              onClick={handleXLogin}
-            >
-              <Image src="/images/logo-white.png" alt="X logo" width={28} height={28} className="mr-3" />
-              Login with X
-            </Button>
+            {status === 'loading' ? (
+              <div>Loading...</div>
+            ) : status === 'authenticated' && session?.user ? (
+              <div className="text-center">
+                {session.user.image && (
+                  <Image
+                    src={session.user.image}
+                    alt="Profile"
+                    width={100}
+                    height={100}
+                    className="rounded-full mx-auto mb-4"
+                  />
+                )}
+                <p className="mb-4">{session.user.name || session.user.username || 'User'}</p>
+                <Link href="/profile-setup">
+                  <Button 
+                    className={`w-full rounded-full shadow-md transition-all duration-200 ease-in-out flex items-center justify-center text-lg ${isDay ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-emerald-600 hover:bg-emerald-500 text-white'}`}
+                  >
+                    Complete Profile Setup
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <Button 
+                className={`w-full rounded-full shadow-md transition-all duration-200 ease-in-out flex items-center justify-center text-lg ${isDay ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-emerald-600 hover:bg-emerald-500 text-white'}`}
+                onClick={handleXLogin}
+              >
+                <Image src="/images/logo-white.png" alt="X logo" width={28} height={28} className="mr-3" />
+                Login with X
+              </Button>
+            )}
           </CardContent>
         </Card>
         

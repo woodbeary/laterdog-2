@@ -1,8 +1,7 @@
 import { NextAuthOptions } from "next-auth"
 import TwitterProvider from "next-auth/providers/twitter"
-import GitHubProvider from "next-auth/providers/github"
 import { db } from '@/lib/firebase'
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 
 declare module "next-auth" {
   interface Session {
@@ -38,13 +37,44 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.TWITTER_CLIENT_SECRET as string,
       version: "2.0",
     }),
-    GitHubProvider({
-      clientId: process.env.GITHUB_CLIENT_ID as string,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
-    }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
+    async signIn({ user, account, profile }) {
+      console.log('SignIn callback', { user, account, profile });
+      if (account?.provider === "twitter" && profile) {
+        const userRef = doc(db, "users", user.id);
+        const userSnap = await getDoc(userRef);
+        
+        if (!userSnap.exists()) {
+          interface UserData {
+            name: string | null | undefined;
+            image: string | null | undefined;
+            twitterUsername: string;
+            twitterId: string;
+            provider: string;
+            setupComplete: boolean;
+            email?: string;
+          }
+
+          const userData: UserData = {
+            name: user.name,
+            image: user.image,
+            twitterUsername: profile.data?.username ?? '',
+            twitterId: profile.data?.id ?? '',
+            provider: account.provider,
+            setupComplete: false,
+          };
+          
+          // Only add email if it's defined
+          if (user.email) {
+            userData.email = user.email;
+          }
+
+          await setDoc(userRef, userData);
+        }
+      }
+      return true;
+    },
     async jwt({ token, user, account, profile }) {
       if (user) {
         token.id = user.id;
@@ -54,8 +84,8 @@ export const authOptions: NextAuthOptions = {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
         if (account.provider === 'twitter') {
-          token.twitterUsername = profile.screen_name;
-          token.twitterId = profile.id_str;
+          token.twitterUsername = profile.data?.username;
+          token.twitterId = profile.data?.id;
         }
         if (account.provider === 'github') {
           token.githubUsername = profile.login;
@@ -75,7 +105,6 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-    // ... rest of the callbacks
   },
   pages: {
     signIn: '/login',
