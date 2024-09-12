@@ -201,11 +201,11 @@ export default function ProfilePage() {
         <Info className="h-4 w-4" />
         <AlertTitle>Work in Progress</AlertTitle>
         <AlertDescription>
-          yo, u stumbled upon a work in progress! Want in on the action? {' '}
+          yo, want in on the action? {' '}
           <Link href="https://twitter.com/messages/compose?recipient_id=laterdogx" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300">
-            Slide into my DMs
+            send me a PM
           </Link>
-          {' '}for a git invite. Let's code. later, dog!
+          {' '}for a git inv. see u later, dog!
         </AlertDescription>
       </Alert>
 
