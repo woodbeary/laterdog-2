@@ -128,7 +128,7 @@ function ErrorFallback({error}: {error: Error}) {
   )
 }
 
-export function LandingPage() {
+export function LandingPage({ children }: { children?: React.ReactNode }) {
   const { data: session, status } = useSession();
   const router = useRouter()
   const [showFullSecurityNote, setShowFullSecurityNote] = useState(false)
@@ -252,6 +252,9 @@ export function LandingPage() {
             )}
           </CardContent>
         </Card>
+        
+        {/* Insert the children (TweetCarousel) here */}
+        {children}
         
         {/* How It Works Section */}
         <div className="w-full mb-16">
