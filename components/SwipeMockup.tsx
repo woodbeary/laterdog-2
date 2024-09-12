@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { useSwipeable } from 'react-swipeable';
 import { mockMatches, MatchData } from '@/lib/mockData';
 import Image from 'next/image';
@@ -11,23 +11,27 @@ const SwipeMockup: React.FC = () => {
 
   const currentProfile = mockMatches[currentIndex];
 
+  const x = useMotionValue(0);
+  const rotate = useTransform(x, [-200, 200], [-30, 30]);
+  const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0]);
+
   const handleSwipe = (swipeDirection: 'left' | 'right') => {
     setDirection(swipeDirection);
     setTimeout(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % mockMatches.length);
       setDirection(null);
+      x.set(0);
     }, 300);
   };
 
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => handleSwipe('left'),
     onSwipedRight: () => handleSwipe('right'),
-    touchEventOptions: { passive: false },
     trackMouse: true
   });
 
   const renderCommitHistory = useMemo(() => {
-    const weeks = 20; // Increased for a wider graph
+    const weeks = 20;
     const daysPerWeek = 7;
     const totalDays = weeks * daysPerWeek;
     const commitIntensity = Math.min(currentProfile.githubData.total_commits / totalDays, 1);
@@ -46,38 +50,30 @@ const SwipeMockup: React.FC = () => {
     });
 
     return (
-      <div className="flex gap-[2px] mt-2 overflow-x-auto pb-2">
-        {Array.from({ length: weeks }).map((_, weekIndex) => (
-          <div key={weekIndex} className="flex flex-col gap-[2px]">
-            {Array.from({ length: daysPerWeek }).map((_, dayIndex) => {
-              const tileIndex = weekIndex * daysPerWeek + dayIndex;
-              return (
-                <div
-                  key={dayIndex}
-                  className={`w-2 h-2 ${commitTiles[tileIndex]} rounded-sm`}
-                ></div>
-              );
-            })}
-          </div>
+      <div className="flex flex-wrap gap-[2px] mt-2 w-full max-w-[300px]">
+        {commitTiles.map((color, index) => (
+          <div
+            key={index}
+            className={`w-2 h-2 ${color} rounded-sm`}
+          ></div>
         ))}
       </div>
     );
   }, [currentProfile.githubData.total_commits]);
 
   return (
-    <div className="w-80 h-[36rem] bg-gray-900 rounded-2xl overflow-hidden relative shadow-lg flex flex-col" {...swipeHandlers}>
+    <div className="w-80 h-[36rem] bg-gray-900 rounded-2xl overflow-hidden relative shadow-lg" {...swipeHandlers}>
       <AnimatePresence initial={false}>
         <motion.div
           key={currentProfile.id}
-          className="flex-grow"
-          initial={{ x: 300, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{
-            x: direction === 'left' ? -300 : 300,
-            opacity: 0,
-            transition: { duration: 0.2 },
+          className="absolute inset-0"
+          style={{ x, rotate, opacity }}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          onDragEnd={(_, info) => {
+            if (info.offset.x < -100) handleSwipe('left');
+            if (info.offset.x > 100) handleSwipe('right');
           }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         >
           <div className="relative h-full">
             <Image
@@ -85,6 +81,9 @@ const SwipeMockup: React.FC = () => {
               alt={currentProfile.name}
               layout="fill"
               objectFit="cover"
+              priority
+              placeholder="blur"
+              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/+F9PQAI8wNPvd7POQAAAABJRU5ErkJggg=="
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
@@ -107,7 +106,7 @@ const SwipeMockup: React.FC = () => {
           </div>
         </motion.div>
       </AnimatePresence>
-      <div className="bg-gray-800 p-4 flex justify-center space-x-6">
+      <div className="absolute bottom-4 left-4 right-4 flex justify-between">
         <button
           className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-red-500 text-3xl shadow-lg backdrop-blur-sm transition-all hover:bg-opacity-30"
           onClick={() => handleSwipe('left')}
@@ -121,6 +120,18 @@ const SwipeMockup: React.FC = () => {
           <Heart size={32} fill="currentColor" />
         </button>
       </div>
+      <motion.div 
+        className="absolute top-1/2 left-4 transform -translate-y-1/2"
+        style={{ opacity: useTransform(x, [-100, 0], [1, 0]) }}
+      >
+        <X size={48} className="text-red-500" />
+      </motion.div>
+      <motion.div 
+        className="absolute top-1/2 right-4 transform -translate-y-1/2"
+        style={{ opacity: useTransform(x, [0, 100], [0, 1]) }}
+      >
+        <Heart size={48} className="text-green-500" />
+      </motion.div>
     </div>
   );
 };

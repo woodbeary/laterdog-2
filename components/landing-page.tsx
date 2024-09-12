@@ -256,12 +256,12 @@ export function LandingPage() {
               <li>The moment when your perfect match is just a commit away.</li>
               <li>The act of postponing a date to fix "one last bug".</li>
             </ol>
-            <p className={`mt-4 italic min-h-[1.5rem] ${isDay ? 'text-gray-500' : 'text-emerald-200'}`}>
+            <p className={`mt-4 italic min-h-[1.5rem] ${isDay ? 'text-gray-500' : 'text-emerald-600'}`}>
               {typedText1}
             </p>
-            <p className={`mt-2 italic min-h-[1.5rem] ${isDay ? 'text-gray-500' : 'text-emerald-200'}`}>
+            <p className={`mt-2 italic min-h-[1.5rem] ${isDay ? 'text-gray-500' : 'text-emerald-600'}`}>
               {typedText2}
-              <span className={`ml-1 inline-block w-2 h-4 ${isDay ? 'bg-gray-500' : 'bg-emerald-200'} ${showCursor ? 'opacity-100' : 'opacity-0'} transition-opacity duration-100`}></span>
+              <span className={`ml-1 inline-block w-2 h-4 ${isDay ? 'bg-gray-500' : 'bg-emerald-600'} ${showCursor ? 'opacity-100' : 'opacity-0'} transition-opacity duration-100`}></span>
             </p>
           </CardContent>
         </Card>
