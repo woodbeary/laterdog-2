@@ -1,20 +1,24 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 
 export default function AuthErrorContent() {
-  const router = useRouter()
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const searchParams = useSearchParams()
-  const [errorMessage, setErrorMessage] = useState('There was an error during the authentication process. Please try again.')
+  const router = useRouter()
 
   useEffect(() => {
-    const error = searchParams.get('error')
-    if (error === 'OAuthCallback') {
-      setErrorMessage('We\'ve hit Twitter\'s rate limit. Please try again in a few minutes.')
+    if (searchParams) {
+      const error = searchParams.get('error')
+      if (error === 'OAuthCallback') {
+        setErrorMessage("We've hit Twitter's rate limit. Please try again in a few minutes.")
+      }
     }
   }, [searchParams])
+
+  if (!errorMessage) return null
 
   return (
     <div className="min-h-screen bg-gray-900 text-green-400 font-mono p-8 flex flex-col items-center justify-center">
