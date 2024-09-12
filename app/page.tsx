@@ -1,5 +1,12 @@
-import { LandingPage } from "@/components/landing-page";
+import { LandingPage, styleTag } from "@/components/landing-page";
 
 export default function Home() {
-  return <LandingPage />;
+  return (
+    <>
+      {styleTag}
+      <div className="hacker-background">
+        <LandingPage />
+      </div>
+    </>
+  );
 }

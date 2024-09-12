@@ -1,6 +1,8 @@
 import NextAuth, { DefaultSession, DefaultUser, NextAuthOptions } from "next-auth"
 import TwitterProvider from "next-auth/providers/twitter"
 import GitHubProvider from "next-auth/providers/github"
+import { db } from '@/lib/firebase'
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -20,11 +22,18 @@ declare module "next-auth" {
   }
 
   interface User extends DefaultUser {
+    username?: string;
+  }
+
+  interface Profile extends Record<string, any> {
+    screen_name?: string;
+    id_str?: string;
     login?: string;
+    avatar_url?: string;
   }
 }
 
-const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     TwitterProvider({
       clientId: process.env.TWITTER_CLIENT_ID as string,
@@ -38,45 +47,60 @@ const authOptions: NextAuthOptions = {
   ],
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async jwt({ token, user, account }) {
-      if (account && user) {
+    async jwt({ token, user, account, profile }) {
+      if (user) {
+        token.id = user.id;
+        token.username = user.username;
+      }
+      if (account && profile) {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
-        token.username = account.providerAccountId;
         if (account.provider === 'twitter') {
-          // Capture Twitter-specific data
-          token.twitterUsername = user.name;
-          token.twitterId = user.id;
+          token.twitterUsername = profile.screen_name;
+          token.twitterId = profile.id_str;
         }
         if (account.provider === 'github') {
-          token.githubUsername = user.login;
-          token.githubImage = user.image;
+          token.githubUsername = profile.login;
+          token.githubImage = profile.avatar_url;
         }
-        console.log("JWT callback token:", token);
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.sub as string;
+        session.user.id = token.id as string;
+        session.user.username = token.username as string;
         session.user.accessToken = token.accessToken as string;
         session.user.refreshToken = token.refreshToken as string;
-        session.user.username = token.username as string;
         session.user.twitterUsername = token.twitterUsername as string;
         session.user.twitterId = token.twitterId as string;
         session.user.githubUsername = token.githubUsername as string;
         session.user.githubImage = token.githubImage as string;
-        console.log("Session callback session:", session);
       }
       return session;
     },
-    async redirect({ url, baseUrl }) {
-      if (url.startsWith("/api/auth/callback")) {
-        return '/profile-setup';
+    async signIn({ user, account, profile }) {
+      if (account?.provider === 'twitter' && profile) {
+        await setDoc(doc(db, 'users', user.id), {
+          name: user.name,
+          image: user.image,
+          username: profile.screen_name || '',
+          twitterUsername: profile.screen_name || '',
+          twitterId: user.id,
+          provider: 'twitter',
+          setupComplete: false,
+        }, { merge: true });
+      } else if (account?.provider === 'github' && profile) {
+        const userDoc = await getDoc(doc(db, 'users', user.id));
+        if (userDoc.exists()) {
+          await updateDoc(doc(db, 'users', user.id), {
+            githubUsername: profile.login,
+            githubImage: profile.avatar_url,
+            setupComplete: true,
+          });
+        }
       }
-      if (url.startsWith("/")) return `${baseUrl}${url}`
-      else if (new URL(url).origin === baseUrl) return url
-      return baseUrl
+      return true;
     },
   },
   pages: {

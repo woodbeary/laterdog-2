@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Github, Trash2 } from 'lucide-react'
 import Image from 'next/image'
-import { db } from '@/firebase'
+import { db } from '@/lib/firebase'
 import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore'
 import { DeleteAccountModal } from '../components/DeleteAccountModal'
 
@@ -43,34 +43,17 @@ export default function ProfileSetupPage() {
         const userDoc = await getDoc(doc(db, 'users', session.user.id))
         if (!userDoc.exists()) {
           // User doesn't exist in Firestore, create the document
-          const userData: {
-            name: string;
-            image: string;
-            username: string;
-            twitterUsername?: string;
-            twitterId?: string;
-            provider: string;
-            setupComplete: boolean;
-            githubLinked: boolean;
-            email?: string;
-          } = {
+          const userData = {
             name: session.user.name || '',
             image: session.user.image || '',
             username: session.user.username || '',
+            twitterUsername: session.user.twitterUsername || '',
+            twitterId: session.user.twitterId || '',
             provider: 'twitter',
             setupComplete: false,
-            githubLinked: false
+            githubLinked: false,
+            email: session.user.email || '',
           };
-          if (session.user.twitterUsername) {
-            userData.twitterUsername = session.user.twitterUsername;
-          }
-          if (session.user.twitterId) {
-            userData.twitterId = session.user.twitterId;
-          }
-          // Only add email if it exists
-          if (session.user.email) {
-            userData.email = session.user.email;
-          }
           await setDoc(doc(db, 'users', session.user.id), userData)
           console.log("Created new user document in Firestore")
         } else if (userDoc.data()?.setupComplete) {
