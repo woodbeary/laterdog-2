@@ -80,23 +80,86 @@
     transform: translateX(0);
   }
   100% {
-    transform: translateX(-50%);
+    transform: translateX(calc(-1 * var(--scroll-width)));
   }
 }
 
 .animate-scroll {
-  animation: scroll 60s linear infinite;
+  animation: scroll var(--animation-duration) linear infinite;
 }
 
 .tweet-carousel-container {
-  height: 250px;
+  position: relative;
+  padding: 20px 0;
+  overflow: hidden;
+  height: 400px; /* Adjust this value as needed */
+}
+
+.fade-overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100px;
+  z-index: 10;
+  pointer-events: none;
 }
 
 .tweet-carousel {
   display: flex;
-  width: fit-content;
+  user-select: none;
+  height: 100%;
 }
 
 .tweet-item {
-  width: 250px;
+  flex-shrink: 0;
+  width: 350px; /* Adjust based on your preference */
+  padding: 0 10px;
+  height: 100%;
+  display: flex;
+  align-items: flex-start; /* Align tweets to the top */
 }
+
+.cursor-grab {
+  cursor: grab;
+}
+
+.cursor-grabbing {
+  cursor: grabbing;
+}
+
+/* Ensure the Tweet component takes up the full width of its container */
+.tweet-wrapper {
+  width: 100%;
+  height: 350px; /* Set a fixed height for all tweets */
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer and Edge */
+}
+
+.tweet-wrapper::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Opera */
+}
+
+.tweet-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tweet-wrapper::-webkit-scrollbar-thumb {
+  background-color: rgba(155, 155, 155, 0.5);
+  border-radius: 20px;
+  border: transparent;
+}
+
+/* Ensure the Tweet component takes up the full width of its container */
+.tweet-wrapper > div {
+  width: 100% !important;
+}
+
+/* Add styles for the Twitter embed */
+.tweet-item iframe {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* Remove any remaining tweet-wrapper styles */

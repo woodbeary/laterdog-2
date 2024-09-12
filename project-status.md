@@ -8,6 +8,13 @@
 - Added 3D heart model using Three.js for visual appeal
 - Implemented TweetCarousel component to showcase user feedback
 - Enhanced global CSS for better dark mode support and component styling
+- Enhanced TweetCarousel with uniform card sizes and improved aesthetics
+- Implemented scrollable Tweet cards for longer content
+- Added custom styling to Tweet cards for better visual consistency
+- Enhanced TweetCarousel with interactive dragging functionality while maintaining automatic scrolling
+- Improved TweetCarousel aesthetics by hiding scrollbars while maintaining scroll functionality
+- Refined TweetCarousel to handle long tweets with fixed height and scrollable containers
+- Refined TweetCarousel styling: aligned tweets to the top and hidden scrollbars for a cleaner look
 
 ## Current Features
 - Twitter OAuth login
@@ -19,7 +26,7 @@
 - 3D heart model on landing page
 - Basic profile setup and viewing
 - Development status banner on profile page
-- TweetCarousel showcasing user testimonials
+- TweetCarousel showcasing user testimonials with uniform card sizes
 
 ## Upcoming Tasks
 - Implement swipe functionality for browsing potential matches

@@ -12,7 +12,6 @@ export default function Home() {
       {styleTag}
       <div className="hacker-background">
         <LandingPage>
-          {/* Add the TweetCarousel as a child of LandingPage */}
           <div className="w-full my-16">
             <h2 className="text-2xl font-bold text-center mb-8">What people are saying</h2>
             <TweetCarousel />

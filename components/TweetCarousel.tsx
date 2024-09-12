@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useRef, useEffect, useState } from 'react';
 import { Tweet } from 'react-tweet';
 
 interface TweetData {
@@ -15,12 +17,69 @@ const tweets: TweetData[] = [
 ];
 
 export function TweetCarousel() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  useEffect(() => {
+    const scrollElement = scrollRef.current;
+    if (scrollElement) {
+      const scrollWidth = scrollElement.scrollWidth;
+      const animationDuration = scrollWidth / 50; // Adjust speed as needed
+      scrollElement.style.setProperty('--scroll-width', `${scrollWidth / 2}px`);
+      scrollElement.style.setProperty('--animation-duration', `${animationDuration}s`);
+    }
+  }, []);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+    scrollRef.current.style.animationPlayState = 'paused';
+    scrollRef.current.style.cursor = 'grabbing';
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    if (scrollRef.current) {
+      scrollRef.current.style.animationPlayState = 'running';
+      scrollRef.current.style.cursor = 'grab';
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleMouseLeave = () => {
+    if (isDragging) {
+      handleMouseUp();
+    }
+  };
+
   return (
-    <div className="tweet-carousel-container overflow-hidden w-full bg-gray-100 dark:bg-gray-800 rounded-lg shadow-inner">
-      <div className="tweet-carousel flex animate-scroll">
+    <div className="tweet-carousel-container w-full overflow-hidden relative">
+      <div className="fade-overlay left-0 bg-gradient-to-r from-white to-transparent dark:from-gray-900"></div>
+      <div className="fade-overlay right-0 bg-gradient-to-l from-white to-transparent dark:from-gray-900"></div>
+      <div 
+        ref={scrollRef} 
+        className="tweet-carousel flex animate-scroll cursor-grab"
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        onMouseMove={handleMouseMove}
+      >
         {tweets.concat(tweets).map((tweet, index) => (
           <div key={`${tweet.id}-${index}`} className="tweet-item flex-shrink-0 mx-4">
-            <Tweet id={tweet.id} />
+            <div className="tweet-wrapper">
+              <Tweet id={tweet.id} />
+            </div>
           </div>
         ))}
       </div>
