@@ -179,7 +179,8 @@ export function LandingPage() {
   }, [])
 
   const bgColor = isDay ? 'bg-white' : 'bg-black'
-  const textColor = isDay ? 'text-gray-900' : 'text-emerald-400'
+  const textColor = isDay ? 'text-gray-900' : 'text-emerald-300'
+  const greenTextColor = isDay ? 'text-blue-600' : 'text-emerald-400'
   const cardBgColor = isDay ? 'bg-gray-50' : 'bg-gray-900'
   const cardBorderColor = isDay ? 'border-gray-200' : 'border-emerald-700'
 
@@ -249,19 +250,19 @@ export function LandingPage() {
         <Card className={`border w-full mb-10 ${cardBgColor} ${cardBorderColor} shadow-lg`}>
           <CardContent className={`pt-6 pb-6 ${isDay ? 'text-gray-800' : 'text-emerald-300'}`}>
             <p className="text-2xl font-bold mb-4">
-              <span className={`${isDay ? 'text-blue-600' : 'text-emerald-400'}`}>later.dog</span> [ley-ter dog]
+              <span className={`${greenTextColor} font-extrabold`}>later.dog</span> [ley-ter dog]
             </p>
             <ol className={`list-decimal list-inside space-y-2 mb-6 ${isDay ? 'text-gray-700' : 'text-emerald-200'}`}>
               <li>A casual farewell between developers, often used after intense coding sessions or hackathons.</li>
               <li>The moment when your perfect match is just a commit away.</li>
               <li>The act of postponing a date to fix "one last bug".</li>
             </ol>
-            <p className={`mt-4 italic min-h-[1.5rem] ${isDay ? 'text-gray-500' : 'text-emerald-600'}`}>
+            <p className={`mt-4 italic min-h-[1.5rem] ${isDay ? 'text-gray-600' : 'text-emerald-500'}`}>
               {typedText1}
             </p>
-            <p className={`mt-2 italic min-h-[1.5rem] ${isDay ? 'text-gray-500' : 'text-emerald-600'}`}>
+            <p className={`mt-2 italic min-h-[1.5rem] ${isDay ? 'text-gray-600' : 'text-emerald-500'}`}>
               {typedText2}
-              <span className={`ml-1 inline-block w-2 h-4 ${isDay ? 'bg-gray-500' : 'bg-emerald-600'} ${showCursor ? 'opacity-100' : 'opacity-0'} transition-opacity duration-100`}></span>
+              <span className={`ml-1 inline-block w-2 h-4 ${isDay ? 'bg-gray-600' : 'bg-emerald-500'} ${showCursor ? 'opacity-100' : 'opacity-0'} transition-opacity duration-100`}></span>
             </p>
           </CardContent>
         </Card>
@@ -448,12 +449,12 @@ const styles = `
 
   /* Add this to make all text have a subtle glow */
   .min-h-screen {
-    text-shadow: 0 0 2px #0f0;
+    text-shadow: none;
   }
 
   /* Enhance the glow effect on hover for interactive elements */
   a:hover, button:hover {
-    text-shadow: 0 0 5px #0f0, 0 0 10px #0f0, 0 0 15px #0f0;
+    text-shadow: 0 0 2px currentColor;
     transition: text-shadow 0.3s ease, color 0.3s ease;
   }
 
@@ -523,6 +524,28 @@ const styles = `
   .bg-black a:hover,
   .bg-black button:hover {
     text-shadow: 0 0 5px #0f0, 0 0 10px #0f0, 0 0 15px #0f0;
+  }
+
+  .text-emerald-300,
+  .text-emerald-400,
+  .text-emerald-500,
+  .text-emerald-600 {
+    text-shadow: none;
+  }
+
+  .glow {
+    text-shadow: 0 0 2px #0f0, 0 0 4px #0f0;
+  }
+
+  /* Remove the general text shadow */
+  .min-h-screen {
+    text-shadow: none;
+  }
+
+  /* Adjust hover effects */
+  a:hover, button:hover {
+    text-shadow: 0 0 2px currentColor;
+    transition: text-shadow 0.3s ease;
   }
 `
 
