@@ -205,7 +205,7 @@ export default function ProfilePage() {
           <Link href="https://twitter.com/messages/compose?recipient_id=laterdogx" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300">
             send me a PM
           </Link>
-          {' '}for a git inv. see u later, dog!
+          {' '}for a git invite. Let's code. later, dog!
         </AlertDescription>
       </Alert>
 
