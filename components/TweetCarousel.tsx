@@ -1,7 +1,10 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import Slider, { Settings } from 'react-slick';
 import { Tweet } from 'react-tweet';
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
 
 interface TweetData {
   id: string;
@@ -17,72 +20,68 @@ const tweets: TweetData[] = [
 ];
 
 export function TweetCarousel() {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
+  const sliderRef = useRef<Slider>(null);
+  const [isPaused, setIsPaused] = useState(false);
+
+  const settings: Settings = {
+    dots: false,
+    infinite: true,
+    speed: 5000,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 0,
+    cssEase: "linear",
+    pauseOnHover: false,
+    swipeToSlide: true,
+    draggable: true,
+    arrows: false,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2,
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 1,
+        }
+      }
+    ]
+  };
 
   useEffect(() => {
-    const scrollElement = scrollRef.current;
-    if (scrollElement) {
-      const scrollWidth = scrollElement.scrollWidth;
-      const animationDuration = scrollWidth / 50; // Adjust speed as needed
-      scrollElement.style.setProperty('--scroll-width', `${scrollWidth / 2}px`);
-      scrollElement.style.setProperty('--animation-duration', `${animationDuration}s`);
+    if (sliderRef.current) {
+      if (isPaused) {
+        sliderRef.current.slickPause();
+      } else {
+        sliderRef.current.slickPlay();
+      }
     }
-  }, []);
+  }, [isPaused]);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!scrollRef.current) return;
-    setIsDragging(true);
-    setStartX(e.pageX - scrollRef.current.offsetLeft);
-    setScrollLeft(scrollRef.current.scrollLeft);
-    scrollRef.current.style.animationPlayState = 'paused';
-    scrollRef.current.style.cursor = 'grabbing';
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-    if (scrollRef.current) {
-      scrollRef.current.style.animationPlayState = 'running';
-      scrollRef.current.style.cursor = 'grab';
-    }
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !scrollRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startX) * 2;
-    scrollRef.current.scrollLeft = scrollLeft - walk;
-  };
-
-  const handleMouseLeave = () => {
-    if (isDragging) {
-      handleMouseUp();
-    }
-  };
+  const handleMouseEnter = () => setIsPaused(true);
+  const handleMouseLeave = () => setIsPaused(false);
 
   return (
-    <div className="tweet-carousel-container w-full overflow-hidden relative">
+    <div 
+      className="tweet-carousel-container w-full relative overflow-hidden"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <div className="fade-overlay left-0 bg-gradient-to-r from-white to-transparent dark:from-gray-900"></div>
       <div className="fade-overlay right-0 bg-gradient-to-l from-white to-transparent dark:from-gray-900"></div>
-      <div 
-        ref={scrollRef} 
-        className="tweet-carousel flex animate-scroll cursor-grab"
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseLeave}
-        onMouseMove={handleMouseMove}
-      >
+      <Slider ref={sliderRef} {...settings}>
         {tweets.concat(tweets).map((tweet, index) => (
-          <div key={`${tweet.id}-${index}`} className="tweet-item flex-shrink-0 mx-4">
+          <div key={`${tweet.id}-${index}`} className="tweet-item px-2">
             <div className="tweet-wrapper">
               <Tweet id={tweet.id} />
             </div>
           </div>
         ))}
-      </div>
+      </Slider>
     </div>
   );
 }

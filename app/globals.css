@@ -91,8 +91,8 @@
 .tweet-carousel-container {
   position: relative;
   padding: 20px 0;
-  overflow: hidden;
   height: 400px; /* Adjust this value as needed */
+  overflow: hidden;
 }
 
 .fade-overlay {
@@ -108,6 +108,11 @@
   display: flex;
   user-select: none;
   height: 100%;
+  cursor: grab;
+}
+
+.tweet-carousel:active {
+  cursor: grabbing;
 }
 
 .tweet-item {
@@ -163,3 +168,73 @@
 }
 
 /* Remove any remaining tweet-wrapper styles */
+
+/* Styles for react-slick carousel */
+.tweet-carousel-container {
+  position: relative;
+  padding: 20px 0;
+  height: 400px; /* Adjust this value as needed */
+  overflow: hidden;
+}
+
+.tweet-item {
+  height: 100%;
+}
+
+.tweet-wrapper {
+  height: 350px; /* Set a fixed height for all tweets */
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer and Edge */
+}
+
+.tweet-wrapper::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Opera */
+}
+
+/* Ensure the Tweet component takes up the full width of its container */
+.tweet-wrapper > div {
+  width: 100% !important;
+}
+
+/* Custom styles for Slick carousel */
+.slick-list {
+  overflow: visible;
+}
+
+.slick-track {
+  display: flex !important;
+  width: 200% !important; /* Double the width for seamless loop */
+}
+
+.slick-slide {
+  height: inherit !important;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+  width: auto !important; /* Allow slides to take their natural width */
+}
+
+.slick-slide.slick-active {
+  opacity: 1;
+}
+
+.slick-slide > div {
+  height: 100%;
+}
+
+/* Remove default Slick arrow styles */
+.slick-prev,
+.slick-next {
+  display: none !important;
+}
+
+/* Ensure the carousel is draggable */
+.slick-list {
+  cursor: grab;
+}
+
+.slick-list:active {
+  cursor: grabbing;
+}
+
+/* ... (keep other existing styles) ... */
