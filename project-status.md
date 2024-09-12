@@ -6,8 +6,8 @@
 - Created dynamic content display based on user authentication status
 - Implemented day/night theme switching based on time of day
 - Added 3D heart model using Three.js for visual appeal
-- Created placeholder for swipe functionality
-- Added development status banner on the profile page with contact information
+- Implemented TweetCarousel component to showcase user feedback
+- Enhanced global CSS for better dark mode support and component styling
 
 ## Current Features
 - Twitter OAuth login
@@ -19,6 +19,7 @@
 - 3D heart model on landing page
 - Basic profile setup and viewing
 - Development status banner on profile page
+- TweetCarousel showcasing user testimonials
 
 ## Upcoming Tasks
 - Implement swipe functionality for browsing potential matches
@@ -35,15 +36,17 @@
 
 ## Known Issues
 - Swipe functionality is not yet implemented (placeholder page in place)
+- Some linter errors in ClientHomeContent component need to be addressed
 
 ## Next Steps
-1. Design and implement the user card component for the swipe interface
-2. Set up backend API for fetching potential matches
-3. Implement swipe gestures and animations
-4. Develop logic for handling user interactions (likes, dislikes, matches)
-5. Create a match notification system
-6. Begin work on GitHub OAuth integration
-7. Start designing the matching algorithm
+1. Resolve linter errors in ClientHomeContent component
+2. Design and implement the user card component for the swipe interface
+3. Set up backend API for fetching potential matches
+4. Implement swipe gestures and animations
+5. Develop logic for handling user interactions (likes, dislikes, matches)
+6. Create a match notification system
+7. Begin work on GitHub OAuth integration
+8. Start designing the matching algorithm
 
 ## Long-term Goals
 - Implement a recommendation system for potential matches
