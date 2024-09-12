@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Github, Code, Users, GitFork, Image, Plus, Menu, AlertCircle, X, Settings, MessageCircle, GitCommit, Calendar, Zap, Shield, Check, Clock } from "lucide-react"
 import { CustomUser, GithubData } from '@/types/user'
-import { useRouter } from 'next/navigation'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { 
   Dialog, 
@@ -24,6 +24,8 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { MatchData, mockMatches } from '@/lib/mockData'
 import { PullRequestsReceived } from '@/components/PullRequestsReceived'
 import { generateWingmanMessage } from '@/lib/messageGenerator'
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Info } from 'lucide-react'
 
 const mockGithubData: GithubData = {
   public_repos: 30,
@@ -195,6 +197,18 @@ export default function ProfilePage() {
 
   return (
     <div className={`relative min-h-screen ${isLightMode ? 'bg-gray-100 text-gray-900' : 'bg-gray-900 text-green-400'} font-mono`}>
+      <Alert className="mb-6 bg-blue-900 border-blue-500">
+        <Info className="h-4 w-4" />
+        <AlertTitle>Work in Progress</AlertTitle>
+        <AlertDescription>
+          yo, u stumbled upon a work in progress! Want in on the action? {' '}
+          <Link href="https://twitter.com/messages/compose?recipient_id=laterdogx" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300">
+            Slide into my DMs
+          </Link>
+          {' '}for a git invite. Let's code. later, dog!
+        </AlertDescription>
+      </Alert>
+
       {/* Off-canvas menu */}
       <div className={`fixed inset-y-0 left-0 w-64 bg-gray-800 p-4 transform transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <button onClick={toggleMenu} className="absolute top-4 right-4">

@@ -6,7 +6,8 @@
 - Created dynamic content display based on user authentication status
 - Implemented day/night theme switching based on time of day
 - Added 3D heart model using Three.js for visual appeal
-- Implemented basic swipe functionality with mock data
+- Created placeholder for swipe functionality
+- Added development status banner on the profile page with contact information
 
 ## Current Features
 - Twitter OAuth login
@@ -17,17 +18,15 @@
 - Day/night theme switching
 - 3D heart model on landing page
 - Basic profile setup and viewing
-- Swipe interface with mock profiles
-- Pull request system for increasing match chances
-- GitHub contribution graph display
-- Grok's roasts integration
-- Swipe and pull request limitations
+- Development status banner on profile page
 
 ## Upcoming Tasks
-- Integrate swipe functionality with backend data
-- Implement real-time matching and notification system
-- Optimize performance for GitHub contribution graph rendering
-- Enhance accessibility for all interactive elements on the swipe page
+- Implement swipe functionality for browsing potential matches
+- Design and create user card component for swipe interface
+- Integrate backend for fetching potential matches
+- Implement swipe gestures and animations
+- Add logic for handling likes, dislikes, and matches
+- Create match notification system
 - Implement GitHub OAuth integration
 - Develop matching algorithm based on coding preferences and GitHub data
 - Implement chat functionality for matched users
@@ -35,17 +34,16 @@
 - Enhance security measures and data privacy controls
 
 ## Known Issues
-- Swipe functionality uses mock data (needs integration with backend)
-- Some linter errors in ClientHomeContent component
+- Swipe functionality is not yet implemented (placeholder page in place)
 
 ## Next Steps
-1. Resolve linter errors in ClientHomeContent component
+1. Design and implement the user card component for the swipe interface
 2. Set up backend API for fetching potential matches
-3. Integrate swipe functionality with real user data
-4. Implement real-time matching and notification system
-5. Begin work on GitHub OAuth integration
-6. Optimize performance, especially for GitHub contribution graph
-7. Enhance accessibility across the application
+3. Implement swipe gestures and animations
+4. Develop logic for handling user interactions (likes, dislikes, matches)
+5. Create a match notification system
+6. Begin work on GitHub OAuth integration
+7. Start designing the matching algorithm
 
 ## Long-term Goals
 - Implement a recommendation system for potential matches
