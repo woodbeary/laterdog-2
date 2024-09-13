@@ -19,7 +19,7 @@ const tweets: TweetData[] = [
   { id: '1834005657374117946', author: 'nathudgens' },
 ];
 
-export function TweetCarousel() {
+const TweetCarousel: React.FC = () => {
   const sliderRef = useRef<Slider>(null);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -85,3 +85,5 @@ export function TweetCarousel() {
     </div>
   );
 }
+
+export default TweetCarousel

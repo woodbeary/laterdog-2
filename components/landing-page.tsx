@@ -14,6 +14,9 @@ import { ErrorBoundary } from 'react-error-boundary'
 import Image from 'next/image'
 import SwipeMockup from './SwipeMockup'
 import { useSession } from "next-auth/react";
+import dynamic from 'next/dynamic'
+
+const TweetCarousel = dynamic(() => import('./TweetCarousel'), { ssr: false })
 
 type GLTFResult = GLTF & {
   nodes: {
