@@ -1,12 +1,10 @@
 import { LandingPage, styleTag } from "@/components/landing-page";
-import { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 
-const TweetCarousel = dynamic(() => import('@/components/TweetCarousel'), { ssr: false });
-
-export const metadata: Metadata = {
-  // ... (keep your existing metadata)
-};
+const TweetCarousel = dynamic(() => import('@/components/TweetCarousel'), { 
+  ssr: false,
+  loading: () => <p>Loading tweets...</p>
+});
 
 export default function Home() {
   return (

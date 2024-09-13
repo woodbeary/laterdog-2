@@ -86,4 +86,4 @@ const TweetCarousel: React.FC = () => {
   );
 }
 
-export default TweetCarousel
+export default TweetCarousel;
