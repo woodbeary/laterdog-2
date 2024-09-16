@@ -36,6 +36,22 @@ const generateMatchRoast = (user2: string) => {
 
 export default function SwipePage() {
   const { data: session, status } = useSession()
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    if (status !== 'loading') {
+      setIsLoading(false)
+    }
+  }, [status])
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
+  if (!session) {
+    return <div>Please sign in to access this page</div>
+  }
+
   const [currentProfile, setCurrentProfile] = useState(mockMatches[0])
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null)
@@ -293,10 +309,6 @@ export default function SwipePage() {
       setPullRequestFeedback(null)
       setPullRequestSent(false)
     }, 2000)
-  }
-
-  if (status === 'loading') {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>
   }
 
   return (

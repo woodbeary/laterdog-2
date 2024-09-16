@@ -1,23 +1,28 @@
-import { LandingPage, styleTag } from "@/components/landing-page";
-import dynamic from 'next/dynamic';
+'use client'
 
-const TweetCarousel = dynamic(() => import('@/components/TweetCarousel'), { 
-  ssr: false,
-  loading: () => <p>Loading tweets...</p>
-});
+import { useSession } from 'next-auth/react'
+import { useEffect, useState } from 'react'
 
 export default function Home() {
-  return (
-    <>
-      {styleTag}
-      <div className="hacker-background">
-        <LandingPage>
-          <div className="w-full my-16">
-            <h2 className="text-2xl font-bold text-center mb-8">What people are saying</h2>
-            <TweetCarousel />
-          </div>
-        </LandingPage>
-      </div>
-    </>
-  );
+  const { data: session, status } = useSession()
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    if (status !== 'loading') {
+      setIsLoading(false)
+    }
+  }, [status])
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
+  if (session) {
+    // Render authenticated content
+  } else {
+    // Render public content or sign-in button
+  }
+
+  // Rest of your component code
+  // ...
 }
