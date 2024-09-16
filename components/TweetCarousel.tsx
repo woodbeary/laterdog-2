@@ -65,8 +65,8 @@ export function TweetCarousel() {
 
   return (
     <div className="tweet-carousel-container w-full overflow-hidden relative">
-      <div className="fade-overlay left-0 bg-gradient-to-r from-white to-transparent dark:from-gray-900"></div>
-      <div className="fade-overlay right-0 bg-gradient-to-l from-white to-transparent dark:from-gray-900"></div>
+      <div className="fade-overlay left-0 bg-gradient-to-r from-gray-900 to-transparent"></div>
+      <div className="fade-overlay right-0 bg-gradient-to-l from-gray-900 to-transparent"></div>
       <div 
         ref={scrollRef} 
         className="tweet-carousel flex animate-scroll cursor-grab"

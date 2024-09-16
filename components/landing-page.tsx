@@ -187,7 +187,7 @@ export function LandingPage({ children }: { children?: React.ReactNode }) {
   const cardBorderColor = isDay ? 'border-gray-200' : 'border-emerald-700'
 
   return (
-    <div className={`min-h-screen ${bgColor} ${textColor} font-mono p-4 sm:p-8 flex flex-col items-center justify-center relative overflow-hidden`}>
+    <div className={`min-h-screen ${bgColor} ${textColor} font-mono p-4 sm:p-8 flex flex-col items-center justify-center relative overflow-hidden transition-colors duration-500`}>
       <div className="w-full max-w-4xl flex flex-col items-center relative z-10">
         {/* 3D Heart Model */}
         <div className="w-full aspect-square max-w-[60vh] flex items-center justify-center mb-4 sm:mb-8 relative z-10">
@@ -204,7 +204,7 @@ export function LandingPage({ children }: { children?: React.ReactNode }) {
         </div>
 
         {/* Title and Subtitle */}
-        <h1 className={`text-4xl sm:text-5xl md:text-6xl font-bold text-center mb-4 sm:mb-6 ${isDay ? 'text-blue-600' : 'text-emerald-400 glitch'}`} data-text="later.dog">
+        <h1 className={`text-4xl sm:text-5xl md:text-6xl font-bold text-center mb-4 sm:mb-6 ${greenTextColor} ${isDay ? '' : 'glitch'}`} data-text="later.dog">
           later.dog
         </h1>
         <p className={`text-center mb-12 sm:mb-16 ${textColor} text-lg sm:text-xl ${isDay ? '' : 'terminal-text'}`}>
@@ -212,7 +212,7 @@ export function LandingPage({ children }: { children?: React.ReactNode }) {
         </p>
         
         {/* Login Card or User Profile */}
-        <Card className={`border mb-12 sm:mb-16 w-full max-w-md ${cardBgColor} ${cardBorderColor} shadow-lg`}>
+        <Card className={`border mb-12 sm:mb-16 w-full max-w-md ${cardBgColor} ${cardBorderColor} shadow-lg transition-colors duration-500`}>
           <CardHeader>
             <CardTitle className={`text-2xl sm:text-3xl ${isDay ? 'text-gray-800' : 'text-emerald-300'}`}>
               {status === 'authenticated' ? 'Welcome Back!' : 'Get Started'}
@@ -276,7 +276,7 @@ export function LandingPage({ children }: { children?: React.ReactNode }) {
         </div>
         
         {/* Definition Card */}
-        <Card className={`border w-full mb-10 ${cardBgColor} ${cardBorderColor} shadow-lg`}>
+        <Card className={`border w-full mb-10 ${cardBgColor} ${cardBorderColor} shadow-lg transition-colors duration-500`}>
           <CardContent className={`pt-6 pb-6 ${isDay ? 'text-gray-800' : 'text-emerald-300'}`}>
             <p className="text-2xl font-bold mb-4">
               <span className={`${greenTextColor} font-extrabold`}>later.dog</span> [ley-ter dog]
@@ -297,7 +297,7 @@ export function LandingPage({ children }: { children?: React.ReactNode }) {
         </Card>
 
         {/* Security Note */}
-        <div className="text-xs text-emerald-600 mt-4 text-center">
+        <div className={`text-xs ${isDay ? 'text-blue-600' : 'text-emerald-600'} mt-4 text-center transition-colors duration-500`}>
           <div className="flex items-center justify-center mb-2">
             <Lock className="w-4 h-4 mr-1" />
             <p>Your security is our top priority.</p>
@@ -327,7 +327,7 @@ export function LandingPage({ children }: { children?: React.ReactNode }) {
         </div>
 
         {/* Credits section */}
-        <div className="text-xs text-emerald-600 mt-8 w-full max-w-2xl">
+        <div className={`text-xs ${isDay ? 'text-blue-600' : 'text-emerald-600'} mt-8 w-full max-w-2xl transition-colors duration-500`}>
           <Button 
             variant="ghost" 
             className="w-full flex items-center justify-center py-2 hover:bg-transparent hover:text-emerald-400 transition-colors duration-200 group"
@@ -388,14 +388,14 @@ export function LandingPage({ children }: { children?: React.ReactNode }) {
         </div>
 
         {/* Additional notes */}
-        <div className="text-xs text-emerald-600 mt-4 text-center">
+        <div className={`text-xs ${isDay ? 'text-blue-600' : 'text-emerald-600'} mt-4 text-center transition-colors duration-500`}>
           <p>We support free speech and the pursuit of happiness.</p>
           <p className="mt-2">Special thanks to Elon Musk for all he continues to do,</p>
           <p>and to the build-in-public community for their unwavering support.</p>
         </div>
 
         {/* Changelog link */}
-        <Link href="/changelog" className="mt-4 inline-flex items-center text-emerald-500 hover:text-emerald-400 transition-colors">
+        <Link href="/changelog" className={`mt-4 inline-flex items-center ${isDay ? 'text-blue-500 hover:text-blue-400' : 'text-emerald-500 hover:text-emerald-400'} transition-colors duration-500`}>
           <Scroll size={14} className="mr-1" />
           View Changelog
         </Link>
@@ -404,11 +404,11 @@ export function LandingPage({ children }: { children?: React.ReactNode }) {
   )
 }
 
-// Add this CSS at the end of the file or in a separate CSS module
+// Update the styles
 const styles = `
   .hacker-background {
     position: relative;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.5s ease, color 0.5s ease;
   }
 
   .glitch {
@@ -476,25 +476,21 @@ const styles = `
     text-shadow: 0 0 5px #0f0, 0 0 10px #0f0;
   }
 
-  /* Add this to make all text have a subtle glow */
   .min-h-screen {
     text-shadow: none;
   }
 
-  /* Enhance the glow effect on hover for interactive elements */
   a:hover, button:hover {
     text-shadow: 0 0 2px currentColor;
     transition: text-shadow 0.3s ease, color 0.3s ease;
   }
 
-  /* Add a specific style for the accordion button */
   .text-emerald-600 button:hover {
     background-color: transparent !important;
     color: #0f0 !important;
     text-shadow: 0 0 5px #0f0, 0 0 10px #0f0;
   }
 
-  /* Add animation for the dropdown */
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-5px); }
     to { opacity: 1; transform: translateY(0); }
@@ -508,40 +504,15 @@ const styles = `
     text-shadow: 0 0 5px #0f0;
   }
 
-  /* Add these new styles for day/night themes */
-  .bg-white {
-    background-color: #ffffff;
-  }
-
-  .bg-black {
-    background-color: #000000;
-  }
-
-  .text-gray-900 {
-    color: #1a202c;
-  }
-
-  .text-emerald-400 {
-    color: #4fd1c5;
+  /* Remove specific background colors and use Tailwind classes instead */
+  /* Add transition to all color changes */
+  * {
+    transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
   }
 
   /* Adjust other elements for day/night themes */
-  .bg-white .card {
-    background-color: #f7fafc;
-    border-color: #e2e8f0;
-  }
-
-  .bg-black .card {
-    background-color: #192734;
-    border-color: #38444d;
-  }
-
-  .bg-white .text-blue-500 {
-    color: #2c7a7b;
-  }
-
-  .bg-black .text-emerald-300 {
-    color: #4fd1c5;
+  .bg-white .card, .bg-black .card {
+    transition: background-color 0.5s ease, border-color 0.5s ease;
   }
 
   /* Adjust hover effects for day/night themes */
@@ -564,17 +535,6 @@ const styles = `
 
   .glow {
     text-shadow: 0 0 2px #0f0, 0 0 4px #0f0;
-  }
-
-  /* Remove the general text shadow */
-  .min-h-screen {
-    text-shadow: none;
-  }
-
-  /* Adjust hover effects */
-  a:hover, button:hover {
-    text-shadow: 0 0 2px currentColor;
-    transition: text-shadow 0.3s ease;
   }
 `
 
