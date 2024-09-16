@@ -54,6 +54,7 @@
 6. Create a match notification system
 7. Begin work on GitHub OAuth integration
 8. Start designing the matching algorithm
+9. test push to main
 
 ## Long-term Goals
 - Implement a recommendation system for potential matches
