@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { TweetCarousel } from '@/components/TweetCarousel';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Users, DollarSign, Share2, Info } from 'lucide-react';
+import Link from 'next/link';
 
 const calculateSurgePrice = (queueCount: number): number => {
   const basePrice = 5;
@@ -48,7 +49,11 @@ export default function WaitlistPage() {
   return (
     <div className={`min-h-screen ${isLightMode ? 'bg-gray-100 text-gray-900' : 'bg-gray-900 text-green-400'} font-mono`}>
       <div className="container mx-auto px-4 py-8 sm:py-12">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-6 text-center">later.dog Waitlist</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold mb-6 text-center">
+          <Link href="/" className="hover:underline">
+            later.dog Waitlist
+          </Link>
+        </h1>
         
         <div className="max-w-md mx-auto bg-gray-800 rounded-lg shadow-lg p-6 mb-8 relative">
           <Dialog open={isInfoModalOpen} onOpenChange={setIsInfoModalOpen}>
