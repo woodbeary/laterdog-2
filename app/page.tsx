@@ -17,12 +17,13 @@ export default function Home() {
     return <div>Loading...</div>
   }
 
-  if (session) {
-    // Render authenticated content
-  } else {
-    // Render public content or sign-in button
-  }
-
-  // Rest of your component code
-  // ...
+  return (
+    <div>
+      {session ? (
+        <p>Authenticated content</p>
+      ) : (
+        <p>Public content or sign-in button</p>
+      )}
+    </div>
+  )
 }

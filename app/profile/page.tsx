@@ -87,6 +87,7 @@ function generateMatchStats(match: MatchData) {
 
 export default function ProfilePage() {
   const { data: session, status } = useSession()
+  const [isLoading, setIsLoading] = useState(true)
   const [githubData, setGithubData] = useState<GithubData | null>(null)
   const [photos, setPhotos] = useState<string[]>([])
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -124,6 +125,12 @@ export default function ProfilePage() {
     console.log('Declined pull request from', profile.name)
     // You might want to remove this pull request from the list
   }
+
+  useEffect(() => {
+    if (status !== 'loading') {
+      setIsLoading(false)
+    }
+  }, [status])
 
   useEffect(() => {
     if (!session) {
@@ -189,8 +196,12 @@ export default function ProfilePage() {
     }
   }
 
-  if (status === 'loading') {
+  if (isLoading) {
     return <div className="flex items-center justify-center h-screen">Loading...</div>
+  }
+
+  if (!session) {
+    return null
   }
 
   const user = session?.user as CustomUser || { name: 'Mock User', username: 'mockuser', image: 'https://github.com/github.png' }

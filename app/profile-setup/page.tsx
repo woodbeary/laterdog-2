@@ -21,16 +21,13 @@ export default function ProfileSetupPage() {
   const [setupProgress, setSetupProgress] = useState(0)
 
   useEffect(() => {
-    const checkAuth = async () => {
-      if (status === 'unauthenticated') {
-        router.push('/login')
-      } else if (status === 'authenticated' && session?.user?.id) {
-        await checkUserSetup()
-      }
+    if (status !== 'loading') {
+      setIsLoading(false)
     }
-
-    checkAuth()
-  }, [status, session, router])
+    if (status === 'unauthenticated') {
+      router.push('/login')
+    }
+  }, [status, router])
 
   const checkUserSetup = async () => {
     if (session?.user?.id) {
@@ -70,8 +67,12 @@ export default function ProfileSetupPage() {
     }
   }
 
-  if (status === 'loading' || isLoading) {
+  if (isLoading) {
     return <div className="flex items-center justify-center h-screen bg-gray-900 text-green-400">Loading...</div>
+  }
+
+  if (!session) {
+    return null
   }
 
   return (
