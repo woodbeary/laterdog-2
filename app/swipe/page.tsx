@@ -35,7 +35,7 @@ const generateMatchRoast = (user2: string) => {
 }
 
 export default function SwipePage() {
-  const { data: session, status } = useSession()
+  const { data: session, status } = useSession() || {}
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
