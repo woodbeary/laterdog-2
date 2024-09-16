@@ -1,6 +1,11 @@
+'use client';
+
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 export default function ComingSoon() {
+  const { data: session, status } = useSession() || {};
+
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-4">
       <h1 className="text-4xl font-bold mb-4">Coming Soon</h1>

@@ -35,20 +35,20 @@ const generateMatchRoast = (user2: string) => {
 }
 
 export default function SwipePage() {
-  const { data: session, status } = useSession() || {}
+  const session = useSession()
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if (status !== 'loading') {
+    if (session.status !== 'loading') {
       setIsLoading(false)
     }
-  }, [status])
+  }, [session.status])
 
   if (isLoading) {
     return <div>Loading...</div>
   }
 
-  if (!session) {
+  if (!session.data) {
     return <div>Please sign in to access this page</div>
   }
 
@@ -86,9 +86,9 @@ export default function SwipePage() {
   const [allProfilesSwiped, setAllProfilesSwiped] = useState(false)
 
   useEffect(() => {
-    console.log('SwipePage - Session status:', status)
-    console.log('SwipePage - Session data:', session)
-  }, [session, status])
+    console.log('SwipePage - Session status:', session.status)
+    console.log('SwipePage - Session data:', session.data)
+  }, [session.status, session.data])
 
   useEffect(() => {
     const now = new Date()

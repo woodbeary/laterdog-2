@@ -4,14 +4,14 @@ import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 
 export default function Home() {
-  const { data: session, status } = useSession()
+  const session = useSession()
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if (status !== 'loading') {
+    if (session.status !== 'loading') {
       setIsLoading(false)
     }
-  }, [status])
+  }, [session.status])
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -19,7 +19,7 @@ export default function Home() {
 
   return (
     <div>
-      {session ? (
+      {session.data ? (
         <p>Authenticated content</p>
       ) : (
         <p>Public content or sign-in button</p>

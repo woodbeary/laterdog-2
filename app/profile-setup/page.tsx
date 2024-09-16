@@ -13,7 +13,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore'
 import Image from 'next/image'
 
 export default function ProfileSetupPage() {
-  const { data: session, status } = useSession()
+  const session = useSession()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
   const [bio, setBio] = useState('')
@@ -21,18 +21,18 @@ export default function ProfileSetupPage() {
   const [setupProgress, setSetupProgress] = useState(0)
 
   useEffect(() => {
-    if (status !== 'loading') {
+    if (session.status !== 'loading') {
       setIsLoading(false)
     }
-    if (status === 'unauthenticated') {
+    if (session.status === 'unauthenticated') {
       router.push('/login')
     }
-  }, [status, router])
+  }, [session.status, router])
 
   const checkUserSetup = async () => {
-    if (session?.user?.id) {
+    if (session.data?.user?.id) {
       try {
-        const userDoc = await getDoc(doc(db, 'users', session.user.id))
+        const userDoc = await getDoc(doc(db, 'users', session.data.user.id))
         if (userDoc.exists() && userDoc.data().setupComplete) {
           router.push('/profile')
         } else {
@@ -53,9 +53,9 @@ export default function ProfileSetupPage() {
   }
 
   const handleContinueToProfile = async () => {
-    if (session?.user?.id) {
+    if (session.data?.user?.id) {
       try {
-        await setDoc(doc(db, 'users', session.user.id), {
+        await setDoc(doc(db, 'users', session.data.user.id), {
           bio,
           codingInterests,
           setupComplete: true,
@@ -71,7 +71,7 @@ export default function ProfileSetupPage() {
     return <div className="flex items-center justify-center h-screen bg-gray-900 text-green-400">Loading...</div>
   }
 
-  if (!session) {
+  if (!session.data) {
     return null
   }
 
@@ -79,16 +79,16 @@ export default function ProfileSetupPage() {
     <div className="min-h-screen bg-gray-900 text-green-400 font-mono p-8 flex flex-col items-center justify-center">
       <h1 className="text-3xl font-bold text-center mb-8 text-green-300">Set Up Your Profile</h1>
       
-      {session?.user?.image && (
+      {session.data.user?.image && (
         <Image
-          src={session.user.image}
+          src={session.data.user.image}
           alt="Profile"
           width={100}
           height={100}
           className="rounded-full mx-auto mb-4"
         />
       )}
-      <p className="mb-4">Welcome, {session?.user?.name || session?.user?.username || 'User'}!</p>
+      <p className="mb-4">Welcome, {session.data.user?.name || session.data.user?.username || 'User'}!</p>
       
       <div className="w-full max-w-md space-y-6">
         <div>

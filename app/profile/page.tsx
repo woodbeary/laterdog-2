@@ -86,7 +86,7 @@ function generateMatchStats(match: MatchData) {
 }
 
 export default function ProfilePage() {
-  const { data: session, status } = useSession()
+  const session = useSession()
   const [isLoading, setIsLoading] = useState(true)
   const [githubData, setGithubData] = useState<GithubData | null>(null)
   const [photos, setPhotos] = useState<string[]>([])
@@ -127,18 +127,18 @@ export default function ProfilePage() {
   }
 
   useEffect(() => {
-    if (status !== 'loading') {
+    if (session.status !== 'loading') {
       setIsLoading(false)
     }
-  }, [status])
+  }, [session.status])
 
   useEffect(() => {
-    if (!session) {
+    if (!session.data) {
       setGithubData(mockGithubData)
-    } else if ((session?.user as CustomUser)?.githubToken) {
+    } else if ((session.data?.user as CustomUser)?.githubToken) {
       fetchGithubData()
     }
-  }, [session])
+  }, [session.data])
 
   useEffect(() => {
     // In a real app, this would be an API call to get the Grok roast
@@ -200,11 +200,11 @@ export default function ProfilePage() {
     return <div className="flex items-center justify-center h-screen">Loading...</div>
   }
 
-  if (!session) {
+  if (!session.data) {
     return null
   }
 
-  const user = session?.user as CustomUser || { name: 'Mock User', username: 'mockuser', image: 'https://github.com/github.png' }
+  const user = session.data?.user as CustomUser || { name: 'Mock User', username: 'mockuser', image: 'https://github.com/github.png' }
 
   return (
     <div className={`relative min-h-screen ${isLightMode ? 'bg-gray-100 text-gray-900' : 'bg-gray-900 text-green-400'} font-mono`}>
