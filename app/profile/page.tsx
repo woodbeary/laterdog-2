@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Github, Code, Users, GitFork, Image, Plus, Menu, AlertCircle, X, Settings, MessageCircle, GitCommit, Calendar, Zap, Shield, Check, Clock } from "lucide-react"
 import { CustomUser, GithubData } from '@/types/user'
-import { useRouter } from 'next/navigation'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { 
   Dialog, 
@@ -24,6 +24,8 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { MatchData, mockMatches } from '@/lib/mockData'
 import { PullRequestsReceived } from '@/components/PullRequestsReceived'
 import { generateWingmanMessage } from '@/lib/messageGenerator'
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Info } from 'lucide-react'
 
 const mockGithubData: GithubData = {
   public_repos: 30,
@@ -140,7 +142,12 @@ export default function ProfilePage() {
   }, [])
 
   const fetchGithubData = async () => {
-    // ... (keep existing fetchGithubData function)
+    try {
+      // Fetch GitHub data
+      // ...
+    } catch (error) {
+      // Handle error without logging sensitive information
+    }
   }
 
   const handlePhotoUpload = () => {
@@ -190,15 +197,27 @@ export default function ProfilePage() {
 
   return (
     <div className={`relative min-h-screen ${isLightMode ? 'bg-gray-100 text-gray-900' : 'bg-gray-900 text-green-400'} font-mono`}>
+      <Alert className="mb-4 bg-blue-900 border-blue-500">
+        <Info className="h-4 w-4" />
+        <AlertTitle>Work in Progress</AlertTitle>
+        <AlertDescription className="text-sm">
+          yo, want in on the action? {' '}
+          <Link href="https://twitter.com/messages/compose?recipient_id=laterdogx" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300">
+            send me a PM
+          </Link>
+          {' '}for a git invite. Let's code. later, dog!
+        </AlertDescription>
+      </Alert>
+
       {/* Off-canvas menu */}
-      <div className={`fixed inset-y-0 left-0 w-64 bg-gray-800 p-4 transform transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <button onClick={toggleMenu} className="absolute top-4 right-4">
+      <div className={`fixed inset-y-0 left-0 w-64 bg-gray-800 p-4 transform transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} z-50`}>
+        <button onClick={toggleMenu} className="absolute top-4 right-4 text-green-400">
           <X size={24} />
         </button>
         <div className="mt-8">
           <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
             <DialogTrigger asChild>
-              <Button variant="ghost" className="w-full justify-start">
+              <Button variant="ghost" className="w-full justify-start text-green-400">
                 <Settings size={24} className="mr-2" /> Settings
               </Button>
             </DialogTrigger>
@@ -210,9 +229,9 @@ export default function ProfilePage() {
       </div>
 
       {/* Main content */}
-      <div className="p-4">
+      <div className="p-4 max-w-3xl mx-auto">
         <div className="flex justify-between items-center mb-4">
-          <Button variant="ghost" onClick={toggleMenu}>
+          <Button variant="ghost" onClick={toggleMenu} className="text-green-400">
             <Menu size={24} />
           </Button>
 
@@ -240,52 +259,52 @@ export default function ProfilePage() {
         </div>
 
         <div className="flex flex-col items-center mb-6">
-          <img src={user.image || 'https://github.com/github.png'} alt="Profile" className="w-32 h-32 rounded-full mb-4" />
-          <h1 className="text-2xl font-bold text-green-300">{user.name}</h1>
+          <img src={user.image || 'https://github.com/github.png'} alt="Profile" className="w-24 h-24 rounded-full mb-4" />
+          <h1 className="text-xl font-bold text-green-300">{user.name}</h1>
           <p className="text-green-400">@{user.username}</p>
-          <p className={`text-sm italic ${isLightMode ? 'text-gray-700' : 'text-green-300'} mt-2`}>
+          <p className={`text-sm italic ${isLightMode ? 'text-gray-700' : 'text-green-300'} mt-2 text-center`}>
             "{grokRoast}"
           </p>
         </div>
 
         {/* GitHub contribution graph */}
-        <div className={`bg-${isLightMode ? 'white' : 'gray-800'} p-4 rounded mb-6`}>
-          <h2 className="text-xl mb-2">Contribution Graph</h2>
+        <div className={`bg-${isLightMode ? 'white' : 'gray-800'} p-4 rounded mb-6 overflow-x-auto`}>
+          <h2 className="text-lg mb-2">Contribution Graph</h2>
           <GithubContributionGraph />
         </div>
 
         {/* GitHub stats */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
           {githubData && (
             <>
               <div className="flex flex-col items-center p-2 bg-gray-800 rounded">
-                <Code className="mb-2" />
-                <p className="text-sm">Repos</p>
+                <Code className="mb-2" size={20} />
+                <p className="text-xs">Repos</p>
                 <p className="font-bold">{githubData.public_repos}</p>
               </div>
               <div className="flex flex-col items-center p-2 bg-gray-800 rounded">
-                <Users className="mb-2" />
-                <p className="text-sm">Followers</p>
+                <Users className="mb-2" size={20} />
+                <p className="text-xs">Followers</p>
                 <p className="font-bold">{githubData.followers}</p>
               </div>
               <div className="flex flex-col items-center p-2 bg-gray-800 rounded">
-                <GitFork className="mb-2" />
-                <p className="text-sm">Following</p>
+                <GitFork className="mb-2" size={20} />
+                <p className="text-xs">Following</p>
                 <p className="font-bold">{githubData.following}</p>
               </div>
               <div className="flex flex-col items-center p-2 bg-gray-800 rounded">
-                <GitCommit className="mb-2" />
-                <p className="text-sm">Total Commits</p>
+                <GitCommit className="mb-2" size={20} />
+                <p className="text-xs">Total Commits</p>
                 <p className="font-bold">{githubData.total_commits}</p>
               </div>
               <div className="flex flex-col items-center p-2 bg-gray-800 rounded">
-                <Code className="mb-2" />
-                <p className="text-sm">Top Language</p>
+                <Code className="mb-2" size={20} />
+                <p className="text-xs">Top Language</p>
                 <p className="font-bold">{githubData.top_language}</p>
               </div>
               <div className="flex flex-col items-center p-2 bg-gray-800 rounded">
-                <Calendar className="mb-2" />
-                <p className="text-sm">Account Age</p>
+                <Calendar className="mb-2" size={20} />
+                <p className="text-xs">Account Age</p>
                 <p className="font-bold">{githubData.account_age} years</p>
               </div>
             </>
@@ -294,7 +313,7 @@ export default function ProfilePage() {
 
         {/* Grok's Detailed Roast */}
         <div className={`bg-${isLightMode ? 'white' : 'gray-800'} p-4 rounded mb-6`}>
-          <h2 className="text-xl mb-2 flex items-center">
+          <h2 className="text-lg mb-2 flex items-center">
             <Zap className="mr-2" size={20} />
             Grok's Roast
           </h2>
@@ -305,17 +324,17 @@ export default function ProfilePage() {
 
         {/* Photo upload section */}
         <div className="mb-6">
-          <h2 className="text-xl mb-2">Your Photos</h2>
+          <h2 className="text-lg mb-2">Your Photos</h2>
           <div className="grid grid-cols-3 gap-2">
             {photos.map((photo, index) => (
-              <img key={index} src={photo} alt={`User photo ${index + 1}`} className="w-full h-32 object-cover rounded" />
+              <img key={index} src={photo} alt={`User photo ${index + 1}`} className="w-full h-24 object-cover rounded" />
             ))}
             {photos.length < 6 && (
               <Button
-                className="w-full h-32 bg-gray-800 hover:bg-gray-700 flex items-center justify-center"
+                className="w-full h-24 bg-gray-800 hover:bg-gray-700 flex items-center justify-center"
                 onClick={handlePhotoUpload}
               >
-                <Plus className="mr-2" /> Add Photo
+                <Plus className="mr-2" size={20} /> Add Photo
               </Button>
             )}
           </div>
@@ -323,7 +342,7 @@ export default function ProfilePage() {
 
         {/* Matches section */}
         <div className="mb-6">
-          <h2 className="text-xl mb-4 text-green-300">Your Matches</h2>
+          <h2 className="text-lg mb-4 text-green-300">Your Matches</h2>
           <div className="space-y-4">
             {matches.map(match => (
               <div key={match.id} className={`flex items-center justify-between p-4 ${isLightMode ? 'bg-white' : 'bg-gray-800'} rounded-lg`}>
@@ -469,7 +488,7 @@ export default function ProfilePage() {
         />
 
         <Button 
-          className="w-full bg-green-600 hover:bg-green-700 text-white"
+          className="w-full bg-green-600 hover:bg-green-700 text-white mb-4"
           onClick={() => router.push('/swipe')}
         >
           Start Swiping

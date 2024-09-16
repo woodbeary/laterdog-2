@@ -1,0 +1,92 @@
+.container {
+  background-color: #000;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.glitchWrapper {
+  position: relative;
+}
+
+.terminal {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 2rem;
+  color: #0f0;
+  margin-bottom: 2rem;
+  text-shadow: 0 0 5px #0f0;
+  animation: glitch 3s infinite;
+}
+
+.prompt {
+  margin-right: 0.5rem;
+}
+
+.cursor {
+  display: inline-block;
+  width: 0.5rem;
+  height: 1.2rem;
+  background-color: #0f0;
+  margin-left: 0.2rem;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+@keyframes glitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+.heart {
+  margin-top: 2rem;
+  filter: drop-shadow(0 0 5px #0f0);
+  /* Remove the pulse animation */
+}
+
+.heartShape {
+  fill: #0f0;
+  stroke: #0f0;
+  stroke-width: 2;
+}
+
+.bracket {
+  fill: none;
+  stroke: #0f0;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ... rest of the styles remain unchanged ... */
+
+.heart:hover {
+  fill: #00ff00; /* Brighter green on hover */
+  filter: drop-shadow(0 0 10px #0f0);
+}
+
+.scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent, rgba(0, 255, 0, 0.2), transparent);
+  animation: scan 7s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}

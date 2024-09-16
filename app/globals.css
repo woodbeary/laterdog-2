@@ -2,83 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
+
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
+ 
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
+ 
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
+ 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
+ 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
+ 
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
+ 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
+
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+ 
     --radius: 0.5rem;
   }
+ 
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
+ 
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
+ 
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
+ 
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
+ 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
+ 
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
+ 
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
+ 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
+ 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
   }
 }
 
@@ -90,3 +74,167 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-1 * var(--scroll-width)));
+  }
+}
+
+.animate-scroll {
+  animation: scroll var(--animation-duration) linear infinite;
+}
+
+.tweet-carousel-container {
+  position: relative;
+  padding: 20px 0;
+  height: 400px; /* Adjust this value as needed */
+  overflow: hidden;
+}
+
+.fade-overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.tweet-carousel {
+  display: flex;
+  user-select: none;
+  height: 100%;
+  cursor: grab;
+}
+
+.tweet-carousel:active {
+  cursor: grabbing;
+}
+
+.tweet-item {
+  flex-shrink: 0;
+  width: 350px; /* Adjust based on your preference */
+  padding: 0 10px;
+  height: 100%;
+  display: flex;
+  align-items: flex-start; /* Align tweets to the top */
+}
+
+.cursor-grab {
+  cursor: grab;
+}
+
+.cursor-grabbing {
+  cursor: grabbing;
+}
+
+/* Ensure the Tweet component takes up the full width of its container */
+.tweet-wrapper {
+  width: 100%;
+  height: 350px; /* Set a fixed height for all tweets */
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer and Edge */
+}
+
+.tweet-wrapper::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Opera */
+}
+
+.tweet-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tweet-wrapper::-webkit-scrollbar-thumb {
+  background-color: rgba(155, 155, 155, 0.5);
+  border-radius: 20px;
+  border: transparent;
+}
+
+/* Ensure the Tweet component takes up the full width of its container */
+.tweet-wrapper > div {
+  width: 100% !important;
+}
+
+/* Add styles for the Twitter embed */
+.tweet-item iframe {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* Remove any remaining tweet-wrapper styles */
+
+/* Styles for react-slick carousel */
+.tweet-carousel-container {
+  position: relative;
+  padding: 20px 0;
+  height: 400px; /* Adjust this value as needed */
+  overflow: hidden;
+}
+
+.tweet-item {
+  height: 100%;
+}
+
+.tweet-wrapper {
+  height: 350px; /* Set a fixed height for all tweets */
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer and Edge */
+}
+
+.tweet-wrapper::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Opera */
+}
+
+/* Ensure the Tweet component takes up the full width of its container */
+.tweet-wrapper > div {
+  width: 100% !important;
+}
+
+/* Custom styles for Slick carousel */
+.slick-list {
+  overflow: visible;
+}
+
+.slick-track {
+  display: flex !important;
+  width: 200% !important; /* Double the width for seamless loop */
+}
+
+.slick-slide {
+  height: inherit !important;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+  width: auto !important; /* Allow slides to take their natural width */
+}
+
+.slick-slide.slick-active {
+  opacity: 1;
+}
+
+.slick-slide > div {
+  height: 100%;
+}
+
+/* Remove default Slick arrow styles */
+.slick-prev,
+.slick-next {
+  display: none !important;
+}
+
+/* Ensure the carousel is draggable */
+.slick-list {
+  cursor: grab;
+}
+
+.slick-list:active {
+  cursor: grabbing;
+}
+
+/* ... (keep other existing styles) ... */

@@ -1,172 +1,127 @@
 'use client'
 
-import { useState } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Github, Image, X, MapPin, Calendar } from "lucide-react"
-import { useRouter } from 'next/navigation'
-
-// Dummy user data (simulating data from X)
-const dummyUser = {
-  name: "John Doe",
-  username: "johndoe",
-  image: "https://picsum.photos/200",
-  location: "",
-  age: null as number | null
-}
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { Progress } from "@/components/ui/progress"
+import { db } from '@/lib/firebase'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
+import Image from 'next/image'
 
 export default function ProfileSetupPage() {
-  const [step, setStep] = useState(1)
-  const [isGithubLinked, setIsGithubLinked] = useState(false)
-  const [selectedProfilePic, setSelectedProfilePic] = useState('')
-  const [bio, setBio] = useState('')
-  const [location, setLocation] = useState(dummyUser.location)
-  const [age, setAge] = useState<number | null>(dummyUser.age)
+  const { data: session, status } = useSession()
   const router = useRouter()
+  const [isLoading, setIsLoading] = useState(true)
+  const [bio, setBio] = useState('')
+  const [codingInterests, setCodingInterests] = useState('')
+  const [setupProgress, setSetupProgress] = useState(0)
 
-  const handleGithubConnect = async () => {
-    // Simulate GitHub connection
-    setIsGithubLinked(true)
-    setStep(2)
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (status === 'unauthenticated') {
+        router.push('/login')
+      } else if (status === 'authenticated' && session?.user?.id) {
+        await checkUserSetup()
+      }
+    }
+
+    checkAuth()
+  }, [status, session, router])
+
+  const checkUserSetup = async () => {
+    if (session?.user?.id) {
+      try {
+        const userDoc = await getDoc(doc(db, 'users', session.user.id))
+        if (userDoc.exists() && userDoc.data().setupComplete) {
+          router.push('/profile')
+        } else {
+          setIsLoading(false)
+        }
+      } catch (error) {
+        console.error("Error checking user setup:", error)
+        setIsLoading(false)
+      }
+    }
   }
 
-  const handleProfilePicSelect = (pic: string) => {
-    setSelectedProfilePic(pic)
-    setStep(3)
+  const updateProgress = () => {
+    let progress = 0
+    if (bio) progress += 50
+    if (codingInterests) progress += 50
+    setSetupProgress(progress)
   }
 
-  const handleBioSubmit = () => {
-    // Here you would typically save the bio to your backend
-    setStep(4)
+  const handleContinueToProfile = async () => {
+    if (session?.user?.id) {
+      try {
+        await setDoc(doc(db, 'users', session.user.id), {
+          bio,
+          codingInterests,
+          setupComplete: true,
+        }, { merge: true })
+        router.push('/profile')
+      } catch (error) {
+        console.error("Error updating user setup:", error)
+      }
+    }
   }
 
-  const handleFinalSubmit = () => {
-    // Here you would save all the profile data
-    router.push('/profile')
-  }
-
-  const formatName = (name: string) => {
-    const names = name.split(' ')
-    return names[0] + ' ' + names[names.length - 1][0] + '.'
+  if (status === 'loading' || isLoading) {
+    return <div className="flex items-center justify-center h-screen bg-gray-900 text-green-400">Loading...</div>
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-green-400 font-mono p-4 flex flex-col">
-      <h1 className="text-2xl font-bold text-center mb-6 text-green-300">Set Up Your Profile</h1>
+    <div className="min-h-screen bg-gray-900 text-green-400 font-mono p-8 flex flex-col items-center justify-center">
+      <h1 className="text-3xl font-bold text-center mb-8 text-green-300">Set Up Your Profile</h1>
       
-      {/* Display user info from X */}
-      <div className="mb-6 text-center">
-        <div className="w-24 h-24 rounded-full mx-auto mb-2 bg-gray-700 flex items-center justify-center">
-          <Image className="w-12 h-12 text-gray-500" />
-        </div>
-        <h2 className="text-xl font-bold">{formatName(dummyUser.name)}</h2>
-        <p className="text-green-400">@{dummyUser.username}</p>
-      </div>
-
-      {step === 1 && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 backdrop-blur-sm">
-          <div className="bg-gray-800 p-6 rounded-lg max-w-sm w-full mx-4 border border-green-500">
-            <h3 className="text-xl font-bold mb-4 text-center text-green-300">Link Your GitHub Account</h3>
-            <p className="mb-4 text-center">To continue setting up your profile, please link your GitHub account.</p>
-            <Button 
-              className="w-full bg-gray-600 hover:bg-gray-500 text-white"
-              onClick={handleGithubConnect}
-            >
-              <Github className="mr-2 h-4 w-4" /> Connect GitHub
-            </Button>
-          </div>
-        </div>
+      {session?.user?.image && (
+        <Image
+          src={session.user.image}
+          alt="Profile"
+          width={100}
+          height={100}
+          className="rounded-full mx-auto mb-4"
+        />
       )}
-
-      {isGithubLinked && step === 2 && (
-        <div className="mb-6">
-          <h3 className="text-xl font-bold mb-4 text-center text-green-300">Choose Your Profile Picture</h3>
-          <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <div className="text-center">
-              <div className="w-32 h-32 rounded-full mb-2 bg-gray-700 flex items-center justify-center mx-auto">
-                <X className="w-16 h-16 text-gray-500" />
-              </div>
-              <Button
-                className={`w-full ${selectedProfilePic === 'x' ? 'bg-blue-600' : 'bg-gray-600'}`}
-                onClick={() => handleProfilePicSelect('x')}
-              >
-                X Profile Pic
-              </Button>
-            </div>
-            <div className="text-center">
-              <div className="w-32 h-32 rounded-full mb-2 bg-gray-700 flex items-center justify-center mx-auto">
-                <Github className="w-16 h-16 text-gray-500" />
-              </div>
-              <Button
-                className={`w-full ${selectedProfilePic === 'github' ? 'bg-gray-600' : 'bg-gray-700'}`}
-                onClick={() => handleProfilePicSelect('github')}
-              >
-                GitHub Profile Pic
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {isGithubLinked && step === 3 && (
-        <div className="mb-6">
-          <h3 className="text-xl font-bold mb-4 text-center text-green-300">Add Your Bio</h3>
-          <textarea
-            className="w-full p-2 bg-gray-800 text-green-400 rounded mb-4 border border-green-500"
-            rows={4}
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-            placeholder="Tell us about yourself..."
+      <p className="mb-4">Welcome, {session?.user?.name || session?.user?.username || 'User'}!</p>
+      
+      <div className="w-full max-w-md space-y-6">
+        <div>
+          <Label htmlFor="bio">Bio</Label>
+          <Textarea 
+            id="bio" 
+            placeholder="Tell us about yourself..." 
+            value={bio} 
+            onChange={(e) => { setBio(e.target.value); updateProgress(); }}
           />
-          <Button 
-            className="w-full bg-green-600 hover:bg-green-700 text-white"
-            onClick={handleBioSubmit}
-          >
-            Continue
-          </Button>
         </div>
-      )}
-
-      {isGithubLinked && step === 4 && (
-        <div className="mb-6">
-          <h3 className="text-xl font-bold mb-4 text-center text-green-300">Additional Information</h3>
-          <div className="space-y-4">
-            <div className="flex items-center">
-              <MapPin className="mr-2" />
-              <Input
-                type="text"
-                placeholder="Location"
-                value={location}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLocation(e.target.value)}
-                className="flex-grow bg-gray-800 text-green-400 border-green-500"
-              />
-            </div>
-            <div className="flex items-center">
-              <Calendar className="mr-2" />
-              <Input
-                type="number"
-                placeholder="Age"
-                value={age || ''}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAge(Number(e.target.value) || null)}
-                className="flex-grow bg-gray-800 text-green-400 border-green-500"
-              />
-            </div>
-          </div>
-          <Button 
-            className="w-full bg-green-600 hover:bg-green-700 text-white mt-4"
-            onClick={handleFinalSubmit}
-          >
-            Complete Profile
-          </Button>
+        
+        <div>
+          <Label htmlFor="codingInterests">Coding Interests</Label>
+          <Input 
+            id="codingInterests" 
+            placeholder="e.g., React, Python, Machine Learning" 
+            value={codingInterests} 
+            onChange={(e) => { setCodingInterests(e.target.value); updateProgress(); }}
+          />
         </div>
-      )}
+        
+        <div>
+          <Label>Profile Completion</Label>
+          <Progress value={setupProgress} className="mt-2" />
+        </div>
 
-      {/* Progress indicator */}
-      <div className="mt-auto pt-8 flex justify-center">
-        <div className={`w-3 h-3 rounded-full ${step >= 1 ? 'bg-green-500' : 'bg-gray-600'} mx-1`}></div>
-        <div className={`w-3 h-3 rounded-full ${step >= 2 ? 'bg-green-500' : 'bg-gray-600'} mx-1`}></div>
-        <div className={`w-3 h-3 rounded-full ${step >= 3 ? 'bg-green-500' : 'bg-gray-600'} mx-1`}></div>
-        <div className={`w-3 h-3 rounded-full ${step >= 4 ? 'bg-green-500' : 'bg-gray-600'} mx-1`}></div>
+        <Button 
+          className="w-full mt-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-full shadow-md transition-all duration-200 ease-in-out"
+          onClick={handleContinueToProfile}
+          disabled={setupProgress < 100}
+        >
+          Continue to Profile
+        </Button>
       </div>
     </div>
   )
