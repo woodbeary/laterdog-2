@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -12,26 +12,17 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Info } from "lucide-react"
-import { useSession } from "next-auth/react"
 
 export default function FilterPage() {
   const router = useRouter()
   const [stage, setStage] = useState<'question' | 'normie' | 'notify'>('question')
   const [twitterHandle, setTwitterHandle] = useState('')
-  const { data: session, status } = useSession()
-
-  useEffect(() => {
-    if (status === "loading") return // Do nothing while loading
-    if (!session) {
-      router.push('/login') // Redirect to login if no session
-    }
-  }, [session, status, router])
 
   const handleFilterChoice = (choice: boolean) => {
     if (choice) {
       setStage('normie')
     } else {
-      router.push('/profile-setup')
+      router.push('/profile-setup')  // Changed from '/login' to '/profile-setup'
     }
   }
 
@@ -44,14 +35,6 @@ export default function FilterPage() {
     console.log('Notify:', twitterHandle)
     // For now, we'll just go back to the landing page
     router.push('/')
-  }
-
-  if (status === "loading") {
-    return <div>Loading...</div>
-  }
-
-  if (!session) {
-    return null // This will prevent any flickering, as the useEffect will redirect
   }
 
   return (

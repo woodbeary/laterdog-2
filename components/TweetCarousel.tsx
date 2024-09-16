@@ -1,10 +1,7 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
-import Slider, { Settings } from 'react-slick';
+import React, { useRef, useEffect, useState } from 'react';
 import { Tweet } from 'react-tweet';
-import "slick-carousel/slick/slick.css"; 
-import "slick-carousel/slick/slick-theme.css";
 
 interface TweetData {
   id: string;
@@ -19,71 +16,73 @@ const tweets: TweetData[] = [
   { id: '1834005657374117946', author: 'nathudgens' },
 ];
 
-const TweetCarousel: React.FC = () => {
-  const sliderRef = useRef<Slider>(null);
-  const [isPaused, setIsPaused] = useState(false);
-
-  const settings: Settings = {
-    dots: false,
-    infinite: true,
-    speed: 5000,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 0,
-    cssEase: "linear",
-    pauseOnHover: false,
-    swipeToSlide: true,
-    draggable: true,
-    arrows: false,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2,
-        }
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 1,
-        }
-      }
-    ]
-  };
+export function TweetCarousel() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   useEffect(() => {
-    if (sliderRef.current) {
-      if (isPaused) {
-        sliderRef.current.slickPause();
-      } else {
-        sliderRef.current.slickPlay();
-      }
+    const scrollElement = scrollRef.current;
+    if (scrollElement) {
+      const scrollWidth = scrollElement.scrollWidth;
+      const animationDuration = scrollWidth / 50; // Adjust speed as needed
+      scrollElement.style.setProperty('--scroll-width', `${scrollWidth / 2}px`);
+      scrollElement.style.setProperty('--animation-duration', `${animationDuration}s`);
     }
-  }, [isPaused]);
+  }, []);
 
-  const handleMouseEnter = () => setIsPaused(true);
-  const handleMouseLeave = () => setIsPaused(false);
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+    scrollRef.current.style.animationPlayState = 'paused';
+    scrollRef.current.style.cursor = 'grabbing';
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    if (scrollRef.current) {
+      scrollRef.current.style.animationPlayState = 'running';
+      scrollRef.current.style.cursor = 'grab';
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleMouseLeave = () => {
+    if (isDragging) {
+      handleMouseUp();
+    }
+  };
 
   return (
-    <div 
-      className="tweet-carousel-container w-full relative overflow-hidden"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+    <div className="tweet-carousel-container w-full overflow-hidden relative">
       <div className="fade-overlay left-0 bg-gradient-to-r from-white to-transparent dark:from-gray-900"></div>
       <div className="fade-overlay right-0 bg-gradient-to-l from-white to-transparent dark:from-gray-900"></div>
-      <Slider ref={sliderRef} {...settings}>
+      <div 
+        ref={scrollRef} 
+        className="tweet-carousel flex animate-scroll cursor-grab"
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        onMouseMove={handleMouseMove}
+      >
         {tweets.concat(tweets).map((tweet, index) => (
-          <div key={`${tweet.id}-${index}`} className="tweet-item px-2">
+          <div key={`${tweet.id}-${index}`} className="tweet-item flex-shrink-0 mx-4">
             <div className="tweet-wrapper">
               <Tweet id={tweet.id} />
             </div>
           </div>
         ))}
-      </Slider>
+      </div>
     </div>
   );
 }
-
-export default TweetCarousel;

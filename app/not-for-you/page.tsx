@@ -1,39 +1,20 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from 'next/link'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 
 export default function NotForYouPage() {
   const [showNotifyForm, setShowNotifyForm] = useState(false)
   const [twitterHandle, setTwitterHandle] = useState('')
   const [isSubmitted, setIsSubmitted] = useState(false)
-  const { data: session, status } = useSession()
-  const router = useRouter()
-
-  useEffect(() => {
-    if (status === "loading") return // Do nothing while loading
-    if (!session) {
-      router.push('/login') // Redirect to login if no session
-    }
-  }, [session, status, router])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // Here you would typically send this to your backend
     console.log('Submitted Twitter handle:', twitterHandle)
     setIsSubmitted(true)
-  }
-
-  if (status === "loading") {
-    return <div>Loading...</div>
-  }
-
-  if (!session) {
-    return null
   }
 
   return (

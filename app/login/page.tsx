@@ -4,13 +4,12 @@ import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { signIn, useSession } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 import { PermissionsModal } from '../components/PermissionsModal'
 
 export default function LoginPage() {
   const router = useRouter()
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const { data: session, status } = useSession()
 
   const handleXLogin = () => {
     setIsModalOpen(true)
@@ -19,15 +18,6 @@ export default function LoginPage() {
   const handleConfirmPermissions = () => {
     setIsModalOpen(false)
     signIn('twitter', { callbackUrl: '/profile-setup' })
-  }
-
-  if (status === 'loading') {
-    return <div>Loading...</div>
-  }
-
-  if (session) {
-    router.push('/profile-setup')
-    return null
   }
 
   return (

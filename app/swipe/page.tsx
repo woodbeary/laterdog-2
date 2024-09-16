@@ -35,23 +35,7 @@ const generateMatchRoast = (user2: string) => {
 }
 
 export default function SwipePage() {
-  const session = useSession()
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    if (session.status !== 'loading') {
-      setIsLoading(false)
-    }
-  }, [session.status])
-
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
-
-  if (!session.data) {
-    return <div>Please sign in to access this page</div>
-  }
-
+  const { data: session, status } = useSession()
   const [currentProfile, setCurrentProfile] = useState(mockMatches[0])
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null)
@@ -86,9 +70,9 @@ export default function SwipePage() {
   const [allProfilesSwiped, setAllProfilesSwiped] = useState(false)
 
   useEffect(() => {
-    console.log('SwipePage - Session status:', session.status)
-    console.log('SwipePage - Session data:', session.data)
-  }, [session.status, session.data])
+    console.log('SwipePage - Session status:', status)
+    console.log('SwipePage - Session data:', session)
+  }, [session, status])
 
   useEffect(() => {
     const now = new Date()
@@ -309,6 +293,10 @@ export default function SwipePage() {
       setPullRequestFeedback(null)
       setPullRequestSent(false)
     }, 2000)
+  }
+
+  if (status === 'loading') {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>
   }
 
   return (

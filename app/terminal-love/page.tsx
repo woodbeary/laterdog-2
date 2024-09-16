@@ -1,15 +1,7 @@
 import React from 'react';
 import styles from './TerminalLove.module.css';
-import { useSession } from 'next-auth/react';
 
 export default function TerminalLove() {
-  const session = useSession();
-
-  // Check if session is loading or undefined
-  if (!session) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <div className={styles.container}>
       <div className={styles.glitchWrapper}>

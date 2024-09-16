@@ -3,19 +3,8 @@
 import { Button } from "@/components/ui/button"
 import Link from 'next/link'
 import { ChevronLeft } from "lucide-react"
-import { useSession } from "next-auth/react"
 
 export default function ChangelogPage() {
-  const session = useSession()
-
-  if (session.status === "loading") {
-    return <div>Loading...</div>
-  }
-
-  if (session.status === "unauthenticated") {
-    return <div>Access Denied</div>
-  }
-
   return (
     <div className="min-h-screen bg-gray-900 text-green-400 font-mono p-4 sm:p-8">
       <Link href="/">

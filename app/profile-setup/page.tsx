@@ -13,7 +13,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore'
 import Image from 'next/image'
 
 export default function ProfileSetupPage() {
-  const session = useSession()
+  const { data: session, status } = useSession()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
   const [bio, setBio] = useState('')
@@ -21,18 +21,21 @@ export default function ProfileSetupPage() {
   const [setupProgress, setSetupProgress] = useState(0)
 
   useEffect(() => {
-    if (session.status !== 'loading') {
-      setIsLoading(false)
+    const checkAuth = async () => {
+      if (status === 'unauthenticated') {
+        router.push('/login')
+      } else if (status === 'authenticated' && session?.user?.id) {
+        await checkUserSetup()
+      }
     }
-    if (session.status === 'unauthenticated') {
-      router.push('/login')
-    }
-  }, [session.status, router])
+
+    checkAuth()
+  }, [status, session, router])
 
   const checkUserSetup = async () => {
-    if (session.data?.user?.id) {
+    if (session?.user?.id) {
       try {
-        const userDoc = await getDoc(doc(db, 'users', session.data.user.id))
+        const userDoc = await getDoc(doc(db, 'users', session.user.id))
         if (userDoc.exists() && userDoc.data().setupComplete) {
           router.push('/profile')
         } else {
@@ -53,9 +56,9 @@ export default function ProfileSetupPage() {
   }
 
   const handleContinueToProfile = async () => {
-    if (session.data?.user?.id) {
+    if (session?.user?.id) {
       try {
-        await setDoc(doc(db, 'users', session.data.user.id), {
+        await setDoc(doc(db, 'users', session.user.id), {
           bio,
           codingInterests,
           setupComplete: true,
@@ -67,28 +70,24 @@ export default function ProfileSetupPage() {
     }
   }
 
-  if (isLoading) {
+  if (status === 'loading' || isLoading) {
     return <div className="flex items-center justify-center h-screen bg-gray-900 text-green-400">Loading...</div>
-  }
-
-  if (!session.data) {
-    return null
   }
 
   return (
     <div className="min-h-screen bg-gray-900 text-green-400 font-mono p-8 flex flex-col items-center justify-center">
       <h1 className="text-3xl font-bold text-center mb-8 text-green-300">Set Up Your Profile</h1>
       
-      {session.data.user?.image && (
+      {session?.user?.image && (
         <Image
-          src={session.data.user.image}
+          src={session.user.image}
           alt="Profile"
           width={100}
           height={100}
           className="rounded-full mx-auto mb-4"
         />
       )}
-      <p className="mb-4">Welcome, {session.data.user?.name || session.data.user?.username || 'User'}!</p>
+      <p className="mb-4">Welcome, {session?.user?.name || session?.user?.username || 'User'}!</p>
       
       <div className="w-full max-w-md space-y-6">
         <div>

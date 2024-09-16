@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useSession } from 'next-auth/react'
 
 const announcements = [
   "GitHub-Powered Dating",
@@ -14,7 +13,6 @@ const announcements = [
 
 export default function AnnouncementPage() {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const { data: session, status } = useSession()
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -23,10 +21,6 @@ export default function AnnouncementPage() {
 
     return () => clearInterval(timer)
   }, [])
-
-  if (status === "loading") {
-    return <div>Loading...</div>
-  }
 
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center">
