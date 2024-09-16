@@ -54,13 +54,17 @@
 6. Create a match notification system
 7. Begin work on GitHub OAuth integration
 8. Start designing the matching algorithm
+<<<<<<< HEAD
 9. def ready 
+=======
+9. test push to main
+>>>>>>> restored-branch
 
 ## Long-term Goals
 - Implement a recommendation system for potential matches
 - Develop a mobile app version
 - Integrate with more coding platforms and version control systems
-- Implement advanced analytics for user behavior and successful matches
+- Implement advanced analytics for user behavior and successful matches newwwww
 
 ## Notes
 - Ensure all environment variables are properly set in .env.local
