@@ -39,7 +39,7 @@ export default function InternshipPage() {
         <div className="bg-gray-900 p-6 rounded-lg mb-8">
           <h3 className="text-2xl font-bold mb-4 text-green-400">The Role:</h3>
           <ul className="space-y-2 mb-6 text-green-300">
-            <li>• Master the art of the shitpost on 𝕏</li>
+            <li>• Master the art of trash posting on 𝕏</li>
             <li>• Engage with top-tier tech memes</li>
             <li>• Share updates with extra slop</li>
             <li>• Boost visibility creatively</li>
