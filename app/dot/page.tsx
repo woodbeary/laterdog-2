@@ -43,7 +43,10 @@ export default function DotPage() {
             <li>• Post whatever you want (keep it legal tho)</li>
             <li>• Share your hot takes and memes</li>
             <li>• Help us grow this weird community</li>
-            <li>• Get a verified badge, because why not?</li>
+            <li className="flex items-center">
+              • Get a verified badge, because why not?
+              <Image src="/images/twitter-verified-badge.png" width={16} height={16} alt="Verified Badge" className="ml-2" />
+            </li>
             <li>• Maybe even fly to America? 👀✈️</li>
           </ul>
         </div>
