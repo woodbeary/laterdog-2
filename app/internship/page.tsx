@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import Link from 'next/link';
-import { FaTwitter, FaEnvelope, FaFlag, FaGlobeAsia } from 'react-icons/fa';
+import { FaTwitter, FaEnvelope } from 'react-icons/fa';
 
 export default function InternshipPage() {
   const twitterHandle = "@laterdogx";
@@ -41,8 +41,7 @@ export default function InternshipPage() {
           Join us in building a community where code commits lead to real-life commits.
         </p>
         <p className="text-sm mb-6 text-green-300 text-center">
-          <FaFlag className="inline mr-2" /> Based in California, USA<br />
-          <FaGlobeAsia className="inline mr-2" /> With roots in Australia
+          California-based, Australia-rooted
         </p>
 
         <div className="flex space-x-4 mb-4">
