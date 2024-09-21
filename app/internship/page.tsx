@@ -39,7 +39,7 @@ export default function InternshipPage() {
         <div className="bg-gray-900 p-6 rounded-lg mb-8">
           <h3 className="text-2xl font-bold mb-4 text-green-400">The Role:</h3>
           <ul className="space-y-2 mb-6 text-green-300">
-            <li>• Master the art of the shitpost on X</li>
+            <li>• Master the art of the shitpost on 𝕏</li>
             <li>• Engage with top-tier tech memes</li>
             <li>• Share updates with extra slop</li>
             <li>• Boost visibility creatively</li>
@@ -59,7 +59,7 @@ export default function InternshipPage() {
         </p>
         <p className="text-sm mb-8 text-green-300 text-center flex items-center justify-center">
           <Image src="/images/twitter-verified-badge.png" width={20} height={20} alt="Verified Badge" className="mr-2" />
-          Get a verified badge on your personal X account!
+          Get a verified badge on your personal 𝕏 account!
         </p>
 
         <div className="flex space-x-4 mb-5">
