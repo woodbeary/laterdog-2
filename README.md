@@ -1,6 +1,7 @@
 
 
 
+
 # Later.dog
 
 Later.dog is a cutting-edge web application built with Next.js, TypeScript, React, Shadcn, NextAuth.js, and Firebase. It serves as a platform to connect developers, manage internships, and facilitate seamless interactions through a modern, responsive interface.
@@ -94,78 +95,66 @@ Later.dog is a cutting-edge web application built with Next.js, TypeScript, Reac
 ## Project Structure
 later.dog/
 ├─ app/
-│ ├─ api/
-│ │ ├─ auth/
-│ │ │ ├─ [...nextauth]/
-│ │ │ │ ├─ authOptions.ts
-│ │ │ │ └─ route.ts
-│ │ ├─ check-env/
-│ │ │ └─ route.ts
-│ │ ├─ env-test/
-│ │ │ └─ route.ts
-│ │ ├─ fetchgit/
-│ │ │ └─ route.ts
-│ │ ├─ user/
-│ │ │ └─ route.ts
-│ ├─ components/
-│ │ ├─ FirestoreCounter.tsx
-│ │ ├─ TweetCarousel.tsx
-│ │ ├─ landing-page.tsx
-│ │ ├─ ChatComponent.tsx
-│ │ └─ ...other components
-│ ├─ providers.tsx
-│ ├─ dot/
-│ │ └─ page.tsx
-│ ├─ waitlist/
-│ │ └─ page.tsx
-│ ├─ profile/
-│ │ └─ page.tsx
-│ ├─ swipe/
-│ │ └─ page.tsx
-│ ├─ firestore-test/
-│ │ └─ page.tsx
-│ ├─ ...other pages
+│  ├─ api/
+│  │  ├─ auth/
+│  │  │  └─ [...nextauth]/
+│  │  │     ├─ authOptions.ts
+│  │  │     └─ route.ts
+│  │  ├─ check-env/
+│  │  │  └─ route.ts
+│  │  ├─ env-test/
+│  │  │  └─ route.ts
+│  │  ├─ fetchgit/
+│  │  │  └─ route.ts
+│  │  └─ user/
+│  │     └─ route.ts
+│  ├─ components/
+│  │  ├─ FirestoreCounter.tsx
+│  │  ├─ TweetCarousel.tsx
+│  │  ├─ landing-page.tsx
+│  │  └─ ChatComponent.tsx
+│  ├─ providers.tsx
+│  ├─ dot/
+│  │  └─ page.tsx
+│  ├─ waitlist/
+│  │  └─ page.tsx
+│  ├─ profile/
+│  │  └─ page.tsx
+│  ├─ swipe/
+│  │  └─ page.tsx
+│  └─ firestore-test/
+│     └─ page.tsx
 ├─ components/
-│ ├─ ui/
-│ │ ├─ button.tsx
-│ │ ├─ input.tsx
-│ │ ├─ textarea.tsx
-│ │ ├─ dropdown-menu.tsx
-│ │ ├─ alert-dialog.tsx
-│ │ └─ ...other UI components
-│ ├─ ...other components
+│  └─ ui/
+│     ├─ button.tsx
+│     ├─ input.tsx
+│     ├─ textarea.tsx
+│     ├─ dropdown-menu.tsx
+│     └─ alert-dialog.tsx
 ├─ docs/
-│ ├─ architecture.md
-│ ├─ api-routes.md
-│ ├─ components/
-│ │ ├─ FirestoreCounter.md
-│ │ ├─ TweetCarousel.md
-│ │ └─ ...other component docs
-│ └─ ...other documentation files
+│  ├─ architecture.md
+│  ├─ api-routes.md
+│  └─ components/
+│     ├─ FirestoreCounter.md
+│     └─ TweetCarousel.md
 ├─ hooks/
-│ ├─ useAuthRedirect.ts
-│ ├─ useLocalStorage.ts
-│ └─ useCanSwipe.ts
+│  ├─ useAuthRedirect.ts
+│  ├─ useLocalStorage.ts
+│  └─ useCanSwipe.ts
 ├─ lib/
-│ ├─ firebase.ts
-│ ├─ messageGenerator.ts
-│ ├─ mockData.ts
-│ └─ utils.ts
+│  ├─ firebase.ts
+│  ├─ messageGenerator.ts
+│  ├─ mockData.ts
+│  └─ utils.ts
 ├─ public/
-│ ├─ images/
-│ │ ├─ profile1.jpg
-│ │ ├─ profile2.jpg
-│ │ └─ ...other images
-│ └─ ...other assets
+│  └─ images/
+│     ├─ profile1.jpg
+│     └─ profile2.jpg
 ├─ styles/
-│ └─ globals.css
+│  └─ globals.css
 ├─ types/
-│ ├─ user.ts
-│ └─ json-schema.d.ts
-├─ hooks/
-│ └─ ...hooks
-├─ components/
-│ └─ ...components
+│  ├─ user.ts
+│  └─ json-schema.d.ts
 ├─ .env.local
 ├─ next.config.js
 ├─ package.json
