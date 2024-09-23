@@ -20,6 +20,7 @@ import { MatchData, mockMatches } from '@/lib/mockData'
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { generateWingmanMessage } from '@/lib/messageGenerator'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
+import { useCanSwipe } from '@/lib/hooks/useCanSwipe'
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
@@ -68,11 +69,30 @@ export default function SwipePage() {
   const [isLimitReached, setIsLimitReached] = useState(false)
   const [timeUntilReset, setTimeUntilReset] = useState<string | null>(null)
   const [allProfilesSwiped, setAllProfilesSwiped] = useState(false)
+  const { canSwipe, isLoading } = useCanSwipe()
 
   useEffect(() => {
-    console.log('SwipePage - Session status:', status)
-    console.log('SwipePage - Session data:', session)
+    if (isDevelopment) {
+      console.log('Development mode: Authentication bypassed')
+    } else {
+      console.log('SwipePage - Session status:', status)
+      console.log('SwipePage - Session data:', session)
+    }
   }, [session, status])
+
+  useEffect(() => {
+    if (!isDevelopment && !isLoading && !canSwipe) {
+      router.push('/profile-setup')
+    }
+  }, [canSwipe, isLoading, router])
+
+  if (!isDevelopment && isLoading) {
+    return <div>Loading...</div>
+  }
+
+  if (!isDevelopment && !canSwipe) {
+    return null // This will redirect, so we don't need to render anything
+  }
 
   useEffect(() => {
     const now = new Date()

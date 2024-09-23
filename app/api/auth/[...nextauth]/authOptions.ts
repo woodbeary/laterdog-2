@@ -1,7 +1,9 @@
 import { NextAuthOptions } from "next-auth"
 import TwitterProvider from "next-auth/providers/twitter"
+import GitHubProvider from "next-auth/providers/github"
 import { db } from '@/lib/firebase'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
+import { getServerSession } from "next-auth/next"  // Add this import
 
 declare module "next-auth" {
   interface Session {
@@ -15,18 +17,9 @@ declare module "next-auth" {
       twitterId?: string;
       githubUsername?: string;
       githubImage?: string;
+      githubAccessToken?: string;
+      githubId?: string;
     }
-  }
-
-  interface User {
-    username?: string;
-  }
-
-  interface Profile extends Record<string, any> {
-    screen_name?: string;
-    id_str?: string;
-    login?: string;
-    avatar_url?: string;
   }
 }
 
@@ -37,71 +30,68 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.TWITTER_CLIENT_SECRET as string,
       version: "2.0",
     }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_CLIENT_ID as string,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+      authorization: {
+        params: {
+          scope: 'read:user user:email repo'
+        }
+      }
+    }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
-      console.log('SignIn callback', { user, account, profile });
-      if (account?.provider === "twitter" && profile) {
+    async signIn({ user, account, profile, credentials }) {
+      if (account?.provider === "twitter") {
         const userRef = doc(db, "users", user.id);
-        const userSnap = await getDoc(userRef);
-        
-        if (!userSnap.exists()) {
-          interface UserData {
-            name: string | null | undefined;
-            image: string | null | undefined;
-            twitterUsername: string;
-            twitterId: string;
-            provider: string;
-            setupComplete: boolean;
-            email?: string;
-          }
-
-          const userData: UserData = {
-            name: user.name,
-            image: user.image,
-            twitterUsername: profile.data?.username ?? '',
-            twitterId: profile.data?.id ?? '',
-            provider: account.provider,
-            setupComplete: false,
-          };
-          
-          // Only add email if it's defined
-          if (user.email) {
-            userData.email = user.email;
-          }
-
-          await setDoc(userRef, userData);
+        const twitterProfile = profile as any;
+        await setDoc(userRef, {
+          name: user.name,
+          image: user.image,
+          twitterUsername: twitterProfile?.data?.username || twitterProfile?.screen_name,
+          twitterId: user.id,
+          provider: account.provider,
+          setupComplete: false,
+          githubLinked: false,
+        }, { merge: true });
+        return true;
+      } else if (account?.provider === "github") {
+        // Check if there's an existing session (Twitter user)
+        const session = await getServerSession(authOptions);
+        if (session?.user?.id) {
+          const userRef = doc(db, "users", session.user.id);
+          await updateDoc(userRef, {
+            githubUsername: user.name,
+            githubId: user.id,
+            githubImage: user.image,
+            githubLinked: true,
+            githubAccessToken: account.access_token,
+          });
+          return true;
+        } else {
+          console.error("No active Twitter session found for GitHub link");
+          return false;
         }
       }
-      return true;
+      return false;
     },
-    async jwt({ token, user, account, profile }) {
+    async jwt({ token, user, account }) {
       if (user) {
-        token.id = user.id;
-        token.username = user.username;
+        token.userId = user.id;
       }
-      if (account && profile) {
-        token.accessToken = account.access_token;
-        token.refreshToken = account.refresh_token;
-        if (account.provider === 'twitter') {
-          token.twitterUsername = profile.data?.username;
-          token.twitterId = profile.data?.id;
-        }
-        if (account.provider === 'github') {
-          token.githubUsername = profile.login;
-          token.githubImage = profile.avatar_url;
-        }
+      if (account?.provider === 'github') {
+        token.githubUsername = user.name;
+        token.githubAccessToken = account.access_token;
+        token.githubId = user.id;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string;
-        session.user.username = token.username as string;
-        session.user.twitterUsername = token.twitterUsername as string;
-        session.user.twitterId = token.twitterId as string;
+        session.user.id = token.userId as string;
         session.user.githubUsername = token.githubUsername as string;
-        session.user.githubImage = token.githubImage as string;
+        session.user.githubAccessToken = token.githubAccessToken as string;
+        session.user.githubId = token.githubId as string;
       }
       return session;
     },
