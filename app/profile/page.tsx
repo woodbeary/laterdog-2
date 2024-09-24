@@ -167,7 +167,6 @@ export default function ProfilePage() {
 
   const handleUnmatch = (id: string) => {
     setMatches(matches.filter(match => match.id !== id))
-    // In a real app, you'd also update this on the backend
   }
 
   const handleMessage = (username: string) => {
@@ -197,12 +196,12 @@ export default function ProfilePage() {
 
   return (
     <div className={`relative min-h-screen ${isLightMode ? 'bg-gray-100 text-gray-900' : 'bg-gray-900 text-green-400'} font-mono`}>
-      <Alert className="mb-4 bg-blue-900 border-blue-500">
+      <Alert className="mb-4 bg-blue-600 border-blue-400 text-white">
         <Info className="h-4 w-4" />
         <AlertTitle>Work in Progress</AlertTitle>
         <AlertDescription className="text-sm">
-          yo, want in on the action? {' '}
-          <Link href="https://twitter.com/messages/compose?recipient_id=laterdogx" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300">
+          Want in on the action? {' '}
+          <Link href="https://twitter.com/messages/compose?recipient_id=laterdogx" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-200">
             send me a PM
           </Link>
           {' '}for a git invite. Let's code. later, dog!
