@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from './providers';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { Analytics } from "@vercel/analytics/react";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <ThemeProvider>{children}</ThemeProvider>
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
